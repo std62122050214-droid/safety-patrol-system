@@ -13,20 +13,30 @@
         .month-card:hover { transform: translateY(-5px); border-color: #3b82f6; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         .hidden { display: none !important; }
         .stat-badge { display: flex; justify-content: space-between; padding: 0.6rem 0.8rem; border-radius: 0.75rem; margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700; }
-        .input-box { width: 100%; padding: 0.8rem; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 1rem; outline: none; transition: border 0.2s; }
-        .input-box:focus { border-color: #3b82f6; background: #fff; }
+        .input-box { width: 100%; padding: 0.8rem; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 1rem; outline: none; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px); }
-        .modal-container { background: white; width: 100%; max-width: 42rem; border-radius: 2.5rem; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .modal-container { background: white; width: 100%; max-width: 42rem; border-radius: 2.5rem; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
         .scroll-area { overflow-y: auto; flex: 1; padding: 2rem; }
         .img-preview { width: 100%; max-height: 300px; object-fit: cover; border-radius: 1.5rem; border: 1px solid #e2e8f0; }
+        
+        /* กล่องสีแยก PIC และ Reporter */
         .info-box-blue { background-color: #eff6ff; border: 1px solid #dbeafe; border-radius: 1rem; padding: 1rem; }
         .info-box-green { background-color: #ecfdf5; border: 1px solid #d1fae5; border-radius: 1rem; padding: 1rem; }
-        @media print { .no-print { display: none !important; } }
+
+        /* การตั้งค่าสำหรับการพิมพ์ */
+        @media print {
+            .no-print, button, .nav-buttons { display: none !important; }
+            body { background: white !important; padding: 0 !important; }
+            #page-list { display: block !important; }
+            .case-card { break-inside: avoid; border: 1px solid #eee !important; margin-bottom: 20px !important; box-shadow: none !important; }
+            .print-only-header { display: block !important; margin-bottom: 20px; border-bottom: 2px solid #334e68; padding-bottom: 10px; }
+        }
+        .print-only-header { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="page-home" class="min-h-screen p-6 md:p-12">
+    <div id="page-home" class="min-h-screen p-6 md:p-12 no-print">
         <div class="max-w-6xl mx-auto text-center mb-10">
             <h1 class="text-4xl font-extrabold text-slate-800 mb-6 flex items-center justify-center gap-3">
                 <i data-lucide="shield-check" class="text-blue-600" size="40"></i> Safety Patrol & 5S 👷
@@ -40,63 +50,54 @@
     </div>
 
     <div id="page-list" class="hidden min-h-screen pb-10">
+        <div class="print-only-header max-w-4xl mx-auto p-4">
+            <h1 class="text-2xl font-bold">รายงาน Safety Patrol & 5S</h1>
+            <p id="print-month-label" class="text-slate-600"></p>
+        </div>
+
         <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b p-4 mb-6 no-print">
             <div class="max-w-5xl mx-auto flex justify-between items-center">
-                <button onclick="goBackHome()" class="flex items-center gap-2 font-bold text-slate-500 hover:text-blue-600 transition-colors">
+                <button onclick="goBackHome()" class="flex items-center gap-2 font-bold text-slate-500 hover:text-blue-600">
                     <i data-lucide="chevron-left"></i> ย้อนกลับ
                 </button>
                 <h2 id="currentMonthTitle" class="font-black text-slate-800 text-xl"></h2>
-                <button onclick="openForm()" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
-                    <i data-lucide="plus-circle" size="20"></i> เพิ่มข้อมูล
-                </button>
+                <div class="flex gap-2 nav-buttons">
+                    <button onclick="window.print()" class="bg-slate-800 text-white p-2.5 rounded-xl shadow-lg hover:bg-slate-700 transition-all">
+                        <i data-lucide="printer" size="20"></i>
+                    </button>
+                    <button onclick="openForm()" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:bg-blue-700 transition-all">
+                        <i data-lucide="plus-circle" size="20"></i> เพิ่มข้อมูล
+                    </button>
+                </div>
             </div>
         </nav>
         <div id="dataItems" class="max-w-4xl mx-auto p-4 space-y-6"></div>
     </div>
 
-    <div id="modal-detail" class="modal-overlay hidden">
+    <div id="modal-detail" class="modal-overlay hidden no-print">
         <div class="modal-container">
             <div class="px-8 py-4 border-b flex justify-between items-center bg-slate-50/50">
-                <button id="deleteBtn" class="text-red-500 font-bold text-xs bg-red-50 hover:bg-red-100 px-4 py-2 rounded-full transition-colors flex items-center gap-2">
-                    <i data-lucide="trash-2" size="14"></i> ลบข้อมูล
-                </button>
+                <button id="deleteBtn" class="text-red-500 font-bold text-xs bg-red-50 px-4 py-2 rounded-full hover:bg-red-100">ลบข้อมูล</button>
                 <button onclick="document.getElementById('modal-detail').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
                     <i data-lucide="x-circle" size="28"></i>
                 </button>
             </div>
             <div class="scroll-area">
                 <div id="detailViewContent" class="space-y-6"></div>
-                
                 <div id="updateSection" class="mt-10 pt-8 border-t border-dashed border-slate-200">
-                    <h4 class="font-black text-slate-800 mb-6 flex items-center gap-2 text-lg">
-                        <i data-lucide="settings-2" class="text-orange-500"></i> อัปเดตการแก้ไขงาน
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="text-[11px] font-bold text-slate-400 uppercase mb-1 block ml-2">วันที่แก้ไขจริง</label>
-                            <input type="date" id="upActualDate" class="input-box">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-slate-400 uppercase mb-1 block ml-2">สถานะงาน</label>
-                            <select id="upStatus" class="input-box">
-                                <option value="รอดำเนินการ">รอดำเนินการ</option>
-                                <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-                            </select>
-                        </div>
+                    <h4 class="font-black text-slate-800 mb-6 flex items-center gap-2 text-lg"><i data-lucide="settings-2" class="text-orange-500"></i> อัปเดตการแก้ไขงาน</h4>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <input type="date" id="upActualDate" class="input-box">
+                        <select id="upStatus" class="input-box"><option value="รอดำเนินการ">รอดำเนินการ</option><option value="เสร็จสิ้น">เสร็จสิ้น</option></select>
                     </div>
-                    <div class="mb-6">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase mb-2 block ml-2">📸 รูปภาพหลักฐานหลังแก้ไข</label>
-                        <input type="file" id="upImgAfter" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
-                    </div>
-                    <button id="saveUpdateBtn" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-black text-lg shadow-xl hover:bg-slate-900 transition-all">
-                        บันทึกการแก้ไข
-                    </button>
+                    <input type="file" id="upImgAfter" accept="image/*" class="w-full text-sm mb-6">
+                    <button id="saveUpdateBtn" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-black text-lg shadow-xl hover:bg-slate-900">บันทึกการแก้ไข</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="modal-form" class="modal-overlay hidden">
+    <div id="modal-form" class="modal-overlay hidden no-print">
         <div class="modal-container">
             <div class="px-8 py-6 border-b flex justify-between items-center bg-blue-50/30">
                 <h3 class="text-xl font-black text-blue-900">เพิ่มรายการตรวจพบ 📝</h3>
@@ -105,25 +106,18 @@
             <div class="scroll-area">
                 <form id="mainForm" class="space-y-5">
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label class="text-xs font-bold text-slate-500 ml-2">วันที่ตรวจ</label><input type="date" id="postDate" required class="input-box"></div>
-                        <div><label class="text-xs font-bold text-slate-500 ml-2">ผู้รายงาน (Reporter)</label><input type="text" id="reporter" placeholder="ชื่อคุณ" required class="input-box"></div>
+                        <input type="date" id="postDate" required class="input-box">
+                        <input type="text" id="reporter" placeholder="ชื่อผู้รายงาน (Reporter)" required class="input-box">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label class="text-xs font-bold text-slate-500 ml-2">แผนก/พื้นที่</label>
-                            <select id="dept" class="input-box">
-                                <option value="Welding">Welding</option>
-                                <option value="Assembly">Assembly</option>
-                                <option value="Manufacturing">Manufacturing</option>
-                                <option value="Inventory">Inventory</option>
-                            </select>
-                        </div>
-                        <div><label class="text-xs font-bold text-slate-500 ml-2">กำหนดเสร็จ (Due)</label><input type="date" id="dueDate" required class="input-box"></div>
+                        <select id="dept" class="input-box"><option value="Welding">Welding</option><option value="Assembly">Assembly</option><option value="Manufacturing">Manufacturing</option><option value="Inventory">Inventory</option></select>
+                        <input type="date" id="dueDate" required class="input-box">
                     </div>
-                    <div><label class="text-xs font-bold text-slate-500 ml-2">ปัญหาที่พบ</label><textarea id="detail" rows="3" placeholder="อธิบายสิ่งที่พบ..." required class="input-box"></textarea></div>
-                    <div><label class="text-xs font-bold text-slate-500 ml-2">แนวทางแก้ไข</label><textarea id="solution" rows="2" placeholder="ระบุวิธีแก้ไข..." class="input-box"></textarea></div>
-                    <div><label class="text-xs font-bold text-slate-500 ml-2">ผู้รับผิดชอบ (PIC)</label><input type="text" id="owner" placeholder="ระบุชื่อผู้รับผิดชอบ" required class="input-box"></div>
-                    <div><label class="text-xs font-bold text-slate-500 ml-2">รูปภาพที่พบปัญหา</label><input type="file" id="imgBefore" accept="image/*" class="w-full text-sm"></div>
-                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-blue-700 transition-all mt-4">บันทึกข้อมูลลงระบบ</button>
+                    <textarea id="detail" rows="3" placeholder="ปัญหาที่พบ..." required class="input-box"></textarea>
+                    <textarea id="solution" rows="2" placeholder="แนวทางแก้ไข..." class="input-box"></textarea>
+                    <input type="text" id="owner" placeholder="ผู้รับผิดชอบ (PIC)" required class="input-box">
+                    <input type="file" id="imgBefore" accept="image/*" class="w-full text-sm">
+                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg">บันทึกข้อมูล</button>
                 </form>
             </div>
         </div>
@@ -152,7 +146,7 @@
                 const monthId = `${yearSelect.value}-${String(i + 1).padStart(2, '0')}`;
                 const div = document.createElement('div');
                 div.className = 'month-card';
-                div.innerHTML = `<div class="font-black text-slate-800 text-lg mb-4 flex items-center justify-between">${m} <i data-lucide="calendar-days" class="text-slate-300"></i></div><div id="stats-${monthId}"></div>`;
+                div.innerHTML = `<div class="font-black text-slate-800 text-lg mb-4 flex items-center justify-between">${m} <i data-lucide="calendar" class="text-slate-300"></i></div><div id="stats-${monthId}"></div>`;
                 
                 onValue(ref(db, `patrols/${monthId}`), (snap) => {
                     const statsDiv = document.getElementById(`stats-${monthId}`);
@@ -160,15 +154,12 @@
                     if (data) {
                         const total = Object.keys(data).length;
                         const done = Object.values(data).filter(v => v.status === 'เสร็จสิ้น').length;
-                        const pending = total - done;
                         statsDiv.innerHTML = `
-                            <div class="stat-badge bg-blue-50 text-blue-700"><span>พบทั้งหมด</span> <span>${total}</span></div>
-                            <div class="stat-badge bg-emerald-50 text-emerald-700"><span>แก้ไขแล้ว</span> <span>${done}</span></div>
-                            <div class="stat-badge bg-orange-50 text-orange-700"><span>คงเหลือ</span> <span>${pending}</span></div>
+                            <div class="stat-badge bg-blue-50 text-blue-700"><span>พบ</span> <span>${total}</span></div>
+                            <div class="stat-badge bg-emerald-50 text-emerald-700"><span>เสร็จ</span> <span>${done}</span></div>
+                            <div class="stat-badge bg-orange-50 text-orange-700"><span>คงเหลือ</span> <span>${total-done}</span></div>
                         `;
-                    } else { 
-                        statsDiv.innerHTML = `<div class="text-center py-6 text-slate-300 text-xs font-bold italic">ยังไม่มีรายการบันทึก</div>`; 
-                    }
+                    } else { statsDiv.innerHTML = `<div class="text-center py-4 text-slate-300 text-xs italic">ไม่มีข้อมูล</div>`; }
                 });
 
                 div.onclick = () => { 
@@ -176,6 +167,7 @@
                     document.getElementById('page-home').classList.add('hidden'); 
                     document.getElementById('page-list').classList.remove('hidden'); 
                     document.getElementById('currentMonthTitle').innerText = `${m} ${yearSelect.value}`;
+                    document.getElementById('print-month-label').innerText = `ประจำเดือน: ${m} ${yearSelect.value}`;
                     listenData(); 
                 };
                 grid.appendChild(div);
@@ -192,15 +184,15 @@
                     Object.entries(data).reverse().forEach(([id, item]) => {
                         const isDone = item.status === 'เสร็จสิ้น';
                         container.innerHTML += `
-                            <div onclick='openDetail("${id}", ${JSON.stringify(item)})' class="bg-white p-6 rounded-[2rem] shadow-sm border-l-[10px] ${isDone ? 'border-emerald-500' : 'border-orange-500'} cursor-pointer hover:shadow-md transition-all">
+                            <div onclick='openDetail("${id}", ${JSON.stringify(item)})' class="case-card bg-white p-6 rounded-[2rem] shadow-sm border-l-[10px] ${isDone ? 'border-emerald-500' : 'border-orange-500'} cursor-pointer">
                                 <div class="flex justify-between items-start mb-3">
                                     <span class="text-[11px] font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500 uppercase tracking-wider">📍 ${item.dept}</span>
-                                    <span class="text-xs font-black ${isDone ? 'text-emerald-600' : 'text-orange-600'} bg-white px-3 py-1 rounded-full border shadow-sm">${item.status}</span>
+                                    <span class="text-xs font-black ${isDone ? 'text-emerald-600' : 'text-orange-600'}">${item.status}</span>
                                 </div>
-                                <h3 class="font-bold text-slate-800 text-lg leading-tight mb-5">${item.detail}</h3>
-                                <div class="grid grid-cols-2 gap-2 pt-4 border-t border-slate-50">
-                                    <div class="text-[11px] font-bold text-emerald-600">👤 ผู้รายงาน: ${item.reporter}</div>
-                                    <div class="text-[11px] font-bold text-red-400 text-right">📅 Due: ${item.dueDate}</div>
+                                <h3 class="font-bold text-slate-800 text-lg mb-4">${item.detail}</h3>
+                                <div class="flex justify-between items-center pt-4 border-t border-slate-50">
+                                    <div class="text-[11px] font-black text-emerald-600 italic">👤 Reporter: ${item.reporter}</div>
+                                    <div class="text-[11px] font-bold text-red-400">📅 Due: ${item.dueDate}</div>
                                 </div>
                             </div>`;
                     });
@@ -217,33 +209,18 @@
             else updateSec.classList.remove('hidden');
 
             content.innerHTML = `
-                <div>
-                    <h2 class="text-xl font-black text-slate-800 leading-snug mb-4">${item.detail}</h2>
-                    <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100 mb-6">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">แนวทางการแก้ไข (Solution)</p>
-                        <p class="text-slate-700 font-medium">${item.solution || '-'}</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="info-box-blue">
-                            <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">ผู้รับผิดชอบ (PIC)</p>
-                            <p class="font-black text-blue-900 text-lg">${item.owner}</p>
-                        </div>
-                        <div class="info-box-green">
-                            <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">ผู้รายงาน (Reporter)</p>
-                            <p class="font-black text-emerald-900 text-lg">${item.reporter}</p>
-                        </div>
-                    </div>
+                <h2 class="text-xl font-black text-slate-800 mb-4">${item.detail}</h2>
+                <div class="p-5 bg-slate-50 rounded-2xl mb-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">แนวทางการแก้ไข</p>
+                    <p class="text-slate-700 font-medium">${item.solution || '-'}</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <p class="text-[11px] font-black text-slate-400 uppercase ml-2">📸 รูปภาพที่พบ</p>
-                        <img src="${item.imgBefore}" class="img-preview shadow-lg">
-                    </div>
-                    ${item.imgAfter ? `
-                    <div class="space-y-2">
-                        <p class="text-[11px] font-black text-emerald-500 uppercase ml-2">✅ แก้ไขเสร็จเมื่อ: ${item.actualDate}</p>
-                        <img src="${item.imgAfter}" class="img-preview border-4 border-emerald-100 shadow-lg">
-                    </div>` : ''}
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="info-box-blue"><p class="text-[10px] font-black text-blue-400 mb-1 uppercase">ผู้รับผิดชอบ (PIC)</p><p class="font-black text-blue-900">${item.owner}</p></div>
+                    <div class="info-box-green"><p class="text-[10px] font-black text-emerald-400 mb-1 uppercase">ผู้รายงาน (Reporter)</p><p class="font-black text-emerald-900">${item.reporter}</p></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                    <div><p class="text-[11px] font-black text-slate-400 mb-2 uppercase">📸 รูปภาพที่พบ</p><img src="${item.imgBefore}" class="img-preview"></div>
+                    ${item.imgAfter ? `<div><p class="text-[11px] font-black text-emerald-500 mb-2 uppercase">✅ รูปแก้ไขแล้ว (${item.actualDate})</p><img src="${item.imgAfter}" class="img-preview border-4 border-emerald-100"></div>` : ''}
                 </div>
             `;
             document.getElementById('modal-detail').classList.remove('hidden');
@@ -269,7 +246,7 @@
 
         document.getElementById('mainForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึกข้อมูล..."; btn.disabled = true;
+            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
             const imgData = await processImg(document.getElementById('imgBefore').files[0]);
             const payload = {
                 postDate: document.getElementById('postDate').value, reporter: document.getElementById('reporter').value,
@@ -278,13 +255,11 @@
                 solution: document.getElementById('solution').value, imgBefore: imgData || "",
                 status: "รอดำเนินการ", ts: new Date().getTime()
             };
-            push(ref(db, `patrols/${currentPath}`), payload).then(() => { 
-                closeForm(); e.target.reset(); btn.innerText = "บันทึกข้อมูลลงระบบ"; btn.disabled = false; 
-            });
+            push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeForm(); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; btn.disabled = false; });
         };
 
         document.getElementById('saveUpdateBtn').onclick = async () => {
-            const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "กำลังประมวลผล..."; btn.disabled = true;
+            const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
             const imgAfterData = await processImg(document.getElementById('upImgAfter').files[0]);
             const updates = { status: document.getElementById('upStatus').value, actualDate: document.getElementById('upActualDate').value };
             if(imgAfterData) updates.imgAfter = imgAfterData;
@@ -293,7 +268,7 @@
             });
         };
 
-        document.getElementById('deleteBtn').onclick = () => { if(confirm('⚠️ คุณแน่ใจใช่ไหมที่จะลบข้อมูลนี้?')) remove(ref(db, `patrols/${currentPath}/${currentEditingId}`)).then(() => document.getElementById('modal-detail').classList.add('hidden')); };
+        document.getElementById('deleteBtn').onclick = () => { if(confirm('ลบข้อมูลนี้ใช่หรือไม่?')) remove(ref(db, `patrols/${currentPath}/${currentEditingId}`)).then(() => document.getElementById('modal-detail').classList.add('hidden')); };
         window.goBackHome = () => { document.getElementById('page-list').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); };
         window.openForm = () => document.getElementById('modal-form').classList.remove('hidden');
         window.closeForm = () => document.getElementById('modal-form').classList.add('hidden');
