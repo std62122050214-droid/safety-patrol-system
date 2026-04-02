@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Safety Patrol & 5S System 2026</title>
+    <title>👷Safety Patrol & 5S👷‍♀️</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
         .input-field { border: 2px solid #f1f5f9; border-radius: 1rem; padding: 0.85rem; width: 100%; outline: none; transition: 0.2s; background: #f8fafc; }
         .input-field:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
 
-        /* 🖨️ Print Style Perfection */
+        /* 🖨️ Print Style (บังคับข้อมูลขึ้นครบ) */
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body { background: white !important; padding: 0; }
@@ -53,10 +53,10 @@
             <div class="inline-block p-4 bg-blue-50 rounded-3xl mb-4">
                 <i data-lucide="shield-check" class="text-blue-600" size="48"></i>
             </div>
-            <h1 class="text-4xl font-extrabold text-slate-800 mb-6">Safety Patrol & 5S</h1>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-6">👷Safety Patrol & 5S👷‍♀️</h1>
             <div class="flex items-center justify-center gap-4">
                 <div class="bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
-                    <span class="text-slate-400 font-bold text-xs uppercase tracking-widest">เลือกปีคัดกรอง:</span>
+                    <span class="text-slate-400 font-bold text-xs uppercase tracking-widest">ปีที่บันทึก:</span>
                     <select id="yearSelect" class="font-bold text-blue-600 outline-none bg-transparent text-xl cursor-pointer"></select>
                 </div>
             </div>
@@ -89,9 +89,7 @@
                 <span class="text-slate-400 font-bold text-xs uppercase tracking-tighter">Information Detail</span>
                 <button onclick="closeModal('modal-view')" class="text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x"></i></button>
             </div>
-            
             <div id="viewDetailContent" class="overflow-y-auto p-6 md:p-10 space-y-8 bg-white"></div>
-            
             <div class="p-6 border-t bg-white no-print">
                 <button id="btnUpdatePop" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold hover:bg-orange-600 shadow-xl shadow-orange-100 flex items-center justify-center gap-3 transition-all active:scale-[0.98]">
                     <i data-lucide="check-circle" size="22"></i> อัปเดตสถานะงาน / ปิดงาน
@@ -119,7 +117,7 @@
                     </div>
                     <div><label class="text-xs font-bold text-slate-400 mb-2 block uppercase tracking-wide">🏷️ หมวดหมู่</label>
                         <select id="category" class="input-field">
-                            <option value="Safety">Safety (ความปลอดภัย)</option><option value="S5">5S (5ส)</option><option value="Other">อื่นๆ</option>
+                            <option value="Safety">Safety</option><option value="S5">5S</option><option value="Other">อื่นๆ</option>
                         </select>
                     </div>
                 </div>
@@ -224,7 +222,6 @@
                                     <div class="flex items-center gap-2 text-xs text-slate-400"><i data-lucide="user-2" size="14"></i> ${item.owner}</div>
                                     <span class="text-blue-600 font-bold text-xs flex items-center gap-1">รายละเอียด <i data-lucide="plus" size="14"></i></span>
                                 </div>
-                                
                                 <div class="print-full">
                                     <div class="print-grid mb-4 text-xs mt-4">
                                         <div class="print-box"><b>👤 ผู้รายงาน:</b> ${item.reporter}</div>
@@ -285,7 +282,7 @@
             document.getElementById('modal-view').classList.remove('hidden');
             lucide.createIcons();
             
-            document.getElementById('btnDeletePop').onclick = () => { if(confirm('⚠️ คุณต้องการลบรายการนี้ใช่หรือไม่? ข้อมูลจะหายไปถาวร')) { remove(ref(db, `patrols/${currentPath}/${id}`)); closeModal('modal-view'); } };
+            document.getElementById('btnDeletePop').onclick = () => { if(confirm('⚠️ คุณต้องการลบรายการนี้ใช่หรือไม่?')) { remove(ref(db, `patrols/${currentPath}/${id}`)); closeModal('modal-view'); } };
             document.getElementById('btnUpdatePop').onclick = () => { closeModal('modal-view'); document.getElementById('modal-update').classList.remove('hidden'); };
         };
 
