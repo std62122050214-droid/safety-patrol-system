@@ -11,38 +11,50 @@
         body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; color: #334155; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none !important; }
         
-        /* Modal Responsive Fix */
+        /* Modal Responsive */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 10px; backdrop-filter: blur(8px); }
-        .modal-box { background: white; width: 100%; max-width: 46rem; border-radius: 1.5rem; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .modal-box { background: white; width: 100%; max-width: 48rem; border-radius: 2rem; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
 
-        /* Input Field Scaling for Mobile */
+        /* Input Field - Balance for PC & Mobile */
         .input-field { 
             border: 2px solid #f1f5f9; 
-            border-radius: 0.75rem; 
-            padding: 0.65rem 0.85rem; /* ลดขนาด Padding ลง */
+            border-radius: 0.85rem; 
+            padding: 0.75rem 1rem; 
             width: 100%; 
             outline: none; 
             transition: 0.2s; 
             background: #f8fafc;
-            font-size: 14px; /* ปรับขนาดฟอนต์ให้พอดีมือถือ */
-        }
-        @media (min-width: 768px) {
-            .input-field { padding: 0.85rem; font-size: 16px; }
+            font-size: 16px; /* ป้องกัน iOS Auto-zoom */
         }
         .input-field:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
 
-        /* Card Style */
-        .case-card { background: white; border-radius: 1.25rem; border-left: 10px solid #cbd5e1; cursor: pointer; transition: 0.3s; border: 1px solid #e2e8f0; border-left-width: 10px; }
+        /* Card Category Colors */
+        .case-card { background: white; border-radius: 1.5rem; border-left: 12px solid #cbd5e1; cursor: pointer; transition: 0.3s; border: 1px solid #e2e8f0; border-left-width: 12px; }
+        .case-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         .Safety { border-left-color: #ef4444; }
         .S5 { border-left-color: #3b82f6; }
         .Other { border-left-color: #a855f7; }
 
-        /* Print Style */
+        /* Dashboard Month Card - Adaptive Size */
+        .month-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 2rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        @media (min-width: 768px) {
+            .month-card { padding: 2rem; }
+        }
+        .month-card:hover { border-color: #3b82f6; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+
+        /* Print Mode */
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
             #page-list { display: block !important; }
-            .case-card { break-inside: avoid; margin-bottom: 25px !important; padding: 25px !important; border: 1px solid #eee !important; border-left: 12px solid !important; }
+            .case-card { break-inside: avoid; margin-bottom: 30px !important; padding: 30px !important; border: 1px solid #eee !important; border-left: 15px solid !important; }
             .print-full { display: block !important; }
         }
         .print-full { display: none; }
@@ -50,50 +62,50 @@
 </head>
 <body>
 
-    <div id="page-home" class="min-h-screen p-5 md:p-12">
-        <div class="max-w-6xl mx-auto text-center mb-8 md:mb-12">
-            <div class="inline-block p-3 bg-blue-50 rounded-2xl mb-3">
-                <i data-lucide="shield-check" class="text-blue-600" size="40"></i>
+    <div id="page-home" class="min-h-screen p-6 md:p-12">
+        <div class="max-w-6xl mx-auto text-center mb-10 md:mb-16">
+            <div class="inline-block p-4 bg-blue-50 rounded-3xl mb-4">
+                <i data-lucide="shield-check" class="text-blue-600" size="48"></i>
             </div>
-            <h1 class="text-2xl md:text-4xl font-extrabold text-slate-800 mb-4 tracking-tight">👷Safety Patrol & 5S👷‍♀️</h1>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800 mb-6 tracking-tight">👷Safety Patrol & 5S👷‍♀️</h1>
             <div class="flex items-center justify-center">
-                <div class="bg-white px-5 py-2 rounded-xl shadow-sm border border-slate-100 flex items-center gap-2">
-                    <span class="text-slate-400 font-bold text-[10px] uppercase tracking-widest">ปีที่บันทึก:</span>
-                    <select id="yearSelect" class="font-bold text-blue-600 outline-none bg-transparent text-lg cursor-pointer"></select>
+                <div class="bg-white px-8 py-3 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                    <span class="text-slate-400 font-bold text-xs md:text-sm uppercase tracking-widest italic">ปีที่บันทึก:</span>
+                    <select id="yearSelect" class="font-bold text-blue-600 outline-none bg-transparent text-xl md:text-2xl cursor-pointer"></select>
                 </div>
             </div>
         </div>
-        <div id="monthGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto"></div>
+        <div id="monthGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 max-w-6xl mx-auto"></div>
     </div>
 
-    <div id="page-list" class="hidden min-h-screen pb-20">
-        <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b p-3 md:p-4 mb-4 no-print shadow-sm">
-            <div class="max-w-4xl mx-auto flex justify-between items-center">
-                <button onclick="goBackHome()" class="font-bold text-slate-500 hover:text-blue-600 flex items-center gap-1 text-sm">
-                    <i data-lucide="arrow-left" size="18"></i> กลับ
+    <div id="page-list" class="hidden min-h-screen pb-24">
+        <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b p-4 md:p-6 mb-6 no-print">
+            <div class="max-w-5xl mx-auto flex justify-between items-center">
+                <button onclick="goBackHome()" class="font-bold text-slate-500 hover:text-blue-600 flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-blue-50 transition-all">
+                    <i data-lucide="arrow-left" size="20"></i> กลับ
                 </button>
-                <h2 id="currentMonthTitle" class="font-bold text-slate-800 text-sm md:text-xl"></h2>
-                <div class="flex gap-2">
-                    <button onclick="window.print()" class="bg-white border p-2 rounded-xl text-slate-500"><i data-lucide="printer" size="18"></i></button>
-                    <button onclick="openForm()" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-lg shadow-blue-100">+ เพิ่มรายการ</button>
+                <h2 id="currentMonthTitle" class="font-bold text-slate-800 text-lg md:text-2xl"></h2>
+                <div class="flex gap-3">
+                    <button onclick="window.print()" class="bg-white border p-3 rounded-2xl text-slate-500 hover:bg-slate-50"><i data-lucide="printer" size="22"></i></button>
+                    <button onclick="openForm()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all">เพิ่มข้อมูลใหม่</button>
                 </div>
             </div>
         </nav>
-        <div id="dataItems" class="max-w-3xl mx-auto px-4 space-y-4"></div>
+        <div id="dataItems" class="max-w-4xl mx-auto px-4 space-y-6"></div>
     </div>
 
     <div id="modal-view" class="modal-overlay hidden">
         <div class="modal-box">
-            <div class="p-3 border-b flex justify-between items-center bg-slate-50/50">
-                <button id="btnDeletePop" class="text-red-500 font-bold text-[11px] flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-red-50">
-                    <i data-lucide="trash-2" size="16"></i> ลบรายการ
+            <div class="p-4 border-b flex justify-between items-center bg-slate-50/50">
+                <button id="btnDeletePop" class="text-red-500 font-bold text-sm flex items-center gap-1 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors">
+                    <i data-lucide="trash-2" size="18"></i> ลบรายการนี้
                 </button>
-                <button onclick="closeModal('modal-view')" class="text-slate-400 p-1"><i data-lucide="x" size="20"></i></button>
+                <button onclick="closeModal('modal-view')" class="text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" size="24"></i></button>
             </div>
-            <div id="viewDetailContent" class="overflow-y-auto p-5 md:p-10 space-y-6 bg-white text-sm"></div>
-            <div class="p-4 border-t bg-white no-print">
-                <button id="btnUpdatePop" class="w-full bg-orange-500 text-white py-3.5 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">
-                    <i data-lucide="check-circle" size="18"></i> อัปเดตสถานะงาน
+            <div id="viewDetailContent" class="overflow-y-auto p-6 md:p-10 space-y-8 bg-white"></div>
+            <div class="p-6 border-t bg-white no-print">
+                <button id="btnUpdatePop" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold shadow-xl hover:bg-orange-600 flex items-center justify-center gap-3 transition-all active:scale-[0.98]">
+                    <i data-lucide="edit-3" size="22"></i> อัปเดตข้อมูล / แก้ไขงาน
                 </button>
             </div>
         </div>
@@ -101,57 +113,57 @@
 
     <div id="modal-form" class="modal-overlay hidden">
         <div class="modal-box">
-            <div class="p-4 border-b bg-blue-600 text-white flex justify-between items-center">
-                <h3 class="font-bold text-sm md:text-base flex items-center gap-2"><i data-lucide="plus-circle" size="18"></i> ลงบันทึกการตรวจพบ</h3>
-                <button onclick="closeModal('modal-form')" class="text-white/70"><i data-lucide="x" size="20"></i></button>
+            <div class="p-6 border-b bg-blue-600 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2"><i data-lucide="plus-circle"></i> บันทึกข้อมูลการตรวจพบ</h3>
+                <button onclick="closeModal('modal-form')" class="text-white/70 hover:text-white"><i data-lucide="x" size="24"></i></button>
             </div>
-            <form id="mainForm" class="overflow-y-auto p-5 md:p-8 space-y-4 md:space-y-6">
-                <div class="grid grid-cols-2 gap-3 md:gap-6">
-                    <div><label class="text-[10px] font-bold text-slate-400 mb-1 block uppercase">📅 วันที่ตรวจ</label><input type="date" id="postDate" required class="input-field"></div>
-                    <div><label class="text-[10px] font-bold text-slate-400 mb-1 block uppercase">👤 ผู้ตรวจพบ</label><input type="text" id="reporter" required class="input-field" placeholder="ชื่อ"></div>
+            <form id="mainForm" class="overflow-y-auto p-6 md:p-10 space-y-6">
+                <div class="grid grid-cols-2 gap-6">
+                    <div><label class="text-xs font-bold text-slate-400 mb-2 block uppercase italic tracking-widest">📅 Date</label><input type="date" id="postDate" required class="input-field"></div>
+                    <div><label class="text-xs font-bold text-slate-400 mb-2 block uppercase italic tracking-widest">👤 Reporter</label><input type="text" id="reporter" required class="input-field" placeholder="ชื่อผู้รายงาน"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-3 md:gap-6">
-                    <div><label class="text-[10px] font-bold text-slate-400 mb-1 block uppercase">📍 แผนก</label>
+                <div class="grid grid-cols-2 gap-6">
+                    <div><label class="text-xs font-bold text-slate-400 mb-2 block uppercase italic tracking-widest">📍 Dept</label>
                         <select id="dept" class="input-field">
                             <option>Welding</option><option>Assembly</option><option>Manufacturing</option><option>Inventory</option><option>อื่นๆ</option>
                         </select>
                     </div>
-                    <div><label class="text-[10px] font-bold text-slate-400 mb-1 block uppercase">🏷️ หมวดหมู่</label>
+                    <div><label class="text-xs font-bold text-slate-400 mb-2 block uppercase italic tracking-widest">🏷️ Category</label>
                         <select id="category" class="input-field">
                             <option value="Safety">Safety</option><option value="S5">5S</option><option value="Other">อื่นๆ</option>
                         </select>
                     </div>
                 </div>
-                <div><label class="text-[10px] font-bold text-red-500 mb-1 block uppercase">⚠️ ปัญหาที่พบ</label><textarea id="detail" rows="2" required class="input-field border-red-50"></textarea></div>
-                <div><label class="text-[10px] font-bold text-red-500 mb-1 block uppercase">📸 รูปภาพ Before</label><input type="file" id="imgBefore" accept="image/*" class="w-full text-[10px] text-slate-400"></div>
+                <div><label class="text-xs font-bold text-red-500 mb-2 block uppercase italic tracking-widest">⚠️ Problem Detail</label><textarea id="detail" rows="3" required class="input-field border-red-50" placeholder="ระบุรายละเอียดปัญหาที่พบ..."></textarea></div>
+                <div><label class="text-xs font-bold text-red-500 mb-2 block uppercase italic tracking-widest">📸 Before Image</label><input type="file" id="imgBefore" accept="image/*" class="w-full text-sm text-slate-400"></div>
                 
-                <div class="bg-green-50/50 p-4 rounded-2xl border border-green-100 space-y-3 md:space-y-5">
-                    <div><label class="text-[10px] font-bold text-green-600 mb-1 block uppercase">🛠️ วิธีแก้ไข</label><textarea id="solution" rows="2" class="input-field border-green-100"></textarea></div>
-                    <div class="grid grid-cols-2 gap-3 md:gap-6">
-                        <div><label class="text-[10px] font-bold text-green-600 mb-1 block uppercase">👷 ผู้รับผิดชอบ</label><input type="text" id="owner" required class="input-field border-green-100"></div>
-                        <div><label class="text-[10px] font-bold text-green-600 mb-1 block uppercase">⏱️ กำหนดเสร็จ</label><input type="date" id="dueDate" required class="input-field border-green-100"></div>
+                <div class="bg-green-50/50 p-6 rounded-3xl border border-green-100 space-y-6">
+                    <div><label class="text-xs font-bold text-green-600 mb-2 block uppercase italic tracking-widest">🛠️ Solution</label><textarea id="solution" rows="2" class="input-field border-green-100" placeholder="แนวทางการแก้ไข..."></textarea></div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div><label class="text-xs font-bold text-green-600 mb-2 block uppercase italic tracking-widest">👷 PIC</label><input type="text" id="owner" required class="input-field border-green-100" placeholder="ผู้รับผิดชอบ"></div>
+                        <div><label class="text-xs font-bold text-green-600 mb-2 block uppercase italic tracking-widest">⏱️ Due Date</label><input type="date" id="dueDate" required class="input-field border-green-100"></div>
                     </div>
                 </div>
-                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-3 md:py-4 rounded-xl font-bold text-sm shadow-xl shadow-blue-100">บันทึกข้อมูล</button>
+                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 md:py-5 rounded-2xl font-bold text-lg shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all">บันทึกข้อมูลเข้าฐานข้อมูล</button>
             </form>
         </div>
     </div>
 
     <div id="modal-update" class="modal-overlay hidden">
         <div class="modal-box max-w-md">
-            <div class="p-4 border-b bg-orange-50 font-bold text-orange-700 flex justify-between items-center text-sm">
+            <div class="p-6 border-b bg-orange-50 font-bold text-orange-700 flex justify-between items-center">
                 <span>อัปเดตสถานะงาน</span>
-                <button onclick="closeModal('modal-update')"><i data-lucide="x" size="20"></i></button>
+                <button onclick="closeModal('modal-update')"><i data-lucide="x" size="24"></i></button>
             </div>
-            <div class="p-5 space-y-4">
-                <div><label class="text-[10px] font-bold text-slate-400 mb-1 block">วันเสร็จจริง</label><input type="date" id="upActualDate" class="input-field"></div>
-                <div><label class="text-[10px] font-bold text-slate-400 mb-1 block">สถานะ</label>
+            <div class="p-8 space-y-6">
+                <div><label class="text-xs font-bold text-slate-400 mb-2 block">วันที่แก้ไขเสร็จจริง</label><input type="date" id="upActualDate" class="input-field"></div>
+                <div><label class="text-xs font-bold text-slate-400 mb-2 block">สถานะปัจจุบัน</label>
                     <select id="upStatus" class="input-field"><option value="รอดำเนินการ">รอดำเนินการ</option><option value="เสร็จสิ้น">เสร็จสิ้น</option></select>
                 </div>
-                <div><label class="text-[10px] font-bold text-slate-400 mb-1 block">รูปภาพ After</label><input type="file" id="upImgAfter" class="w-full text-[10px]"></div>
-                <div class="flex gap-2 pt-2">
-                    <button onclick="closeModal('modal-update')" class="flex-1 py-2.5 bg-slate-100 font-bold rounded-lg text-slate-400 text-xs">ยกเลิก</button>
-                    <button id="saveUpdateBtn" class="flex-1 py-2.5 bg-orange-500 text-white font-bold rounded-lg text-xs shadow-md">ยืนยัน</button>
+                <div><label class="text-xs font-bold text-slate-400 mb-2 block">รูปภาพหลักฐาน (After)</label><input type="file" id="upImgAfter" class="w-full text-sm"></div>
+                <div class="flex gap-4 pt-4">
+                    <button onclick="closeModal('modal-update')" class="flex-1 py-3 bg-slate-100 font-bold rounded-xl text-slate-400 hover:bg-slate-200 transition-colors">ยกเลิก</button>
+                    <button id="saveUpdateBtn" class="flex-1 py-3 bg-orange-500 text-white font-bold rounded-xl shadow-lg hover:bg-orange-600 transition-all">บันทึกอัปเดต</button>
                 </div>
             </div>
         </div>
@@ -177,9 +189,9 @@
             months.forEach((m, i) => {
                 const mid = `${yearSelect.value}-${String(i + 1).padStart(2, '0')}`;
                 const div = document.createElement('div');
-                div.className = 'bg-white p-5 rounded-2xl border border-slate-100 cursor-pointer hover:border-blue-400 transition-all shadow-sm group relative overflow-hidden';
+                div.className = 'month-card cursor-pointer group relative overflow-hidden';
                 div.innerHTML = `
-                    <div class="font-bold text-slate-700 text-sm mb-3 flex justify-between relative z-10">${m} <i data-lucide="arrow-right-circle" size="16" class="text-slate-200 group-hover:text-blue-500"></i></div>
+                    <div class="font-bold text-slate-700 text-xl md:text-2xl mb-6 flex justify-between items-center relative z-10">${m} <i data-lucide="arrow-right-circle" class="text-slate-200 group-hover:text-blue-500 transition-all" size="24"></i></div>
                     <div id="stats-${mid}" class="relative z-10"></div>
                 `;
                 onValue(ref(db, `patrols/${mid}`), (snap) => {
@@ -189,13 +201,14 @@
                         const items = Object.values(data);
                         const total = items.length;
                         const done = items.filter(v => v.status === 'เสร็จสิ้น').length;
+                        // แก้ไขกลับมาเป็นคำเต็มตามสั่ง
                         statsDiv.innerHTML = `
-                            <div class="grid grid-cols-1 gap-1.5 text-[10px] font-bold">
-                                <div class="flex justify-between py-1 px-2 bg-blue-50/50 rounded-lg text-blue-600"><span>พบ</span> <span>${total}</span></div>
-                                <div class="flex justify-between py-1 px-2 bg-emerald-50/50 rounded-lg text-emerald-600"><span>แก้</span> <span>${done}</span></div>
-                                <div class="flex justify-between py-1 px-2 bg-orange-50/50 rounded-lg text-orange-600"><span>เหลือ</span> <span>${total-done}</span></div>
+                            <div class="space-y-2 md:space-y-3">
+                                <div class="flex justify-between text-xs md:text-sm py-2 px-4 bg-blue-50 rounded-xl text-blue-600 font-bold border border-blue-100"><span>ตรวจพบทั้งหมด</span> <span>${total}</span></div>
+                                <div class="flex justify-between text-xs md:text-sm py-2 px-4 bg-emerald-50 rounded-xl text-emerald-600 font-bold border border-emerald-100"><span>แก้ไขเสร็จแล้ว</span> <span>${done}</span></div>
+                                <div class="flex justify-between text-xs md:text-sm py-2 px-4 bg-orange-50 rounded-xl text-orange-600 font-bold border border-orange-100"><span>คงเหลือที่ต้องแก้</span> <span>${total-done}</span></div>
                             </div>`;
-                    } else { statsDiv.innerHTML = `<span class="text-[9px] text-slate-300 italic tracking-wider">NO DATA</span>`; }
+                    } else { statsDiv.innerHTML = `<span class="text-sm text-slate-300 italic tracking-widest uppercase">No Records</span>`; }
                     lucide.createIcons();
                 });
                 div.onclick = () => { currentPath = mid; document.getElementById('page-home').classList.add('hidden'); document.getElementById('page-list').classList.remove('hidden'); document.getElementById('currentMonthTitle').innerText = `${m} ${yearSelect.value}`; listenData(); };
@@ -212,23 +225,27 @@
                     Object.entries(data).reverse().forEach(([id, item]) => {
                         const isDone = item.status === 'เสร็จสิ้น';
                         container.innerHTML += `
-                            <div onclick='viewDetail("${id}", ${JSON.stringify(item)})' class="case-card ${item.category} p-4 md:p-6">
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${item.category} | ${item.dept}</span>
-                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${isDone ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">${item.status}</span>
+                            <div onclick='viewDetail("${id}", ${JSON.stringify(item)})' class="case-card ${item.category} p-6 md:p-8">
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">${item.category} | ${item.dept}</span>
+                                    <span class="text-xs font-bold px-4 py-1.5 rounded-full ${isDone ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'} shadow-sm">${item.status}</span>
                                 </div>
-                                <h3 class="font-bold text-slate-800 text-sm md:text-lg">${item.detail}</h3>
-                                <div class="print-full mt-4 border-t pt-4 text-[11px] space-y-2">
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div class="bg-slate-50 p-2 rounded"><b>ผู้รายงาน:</b> ${item.reporter}</div>
-                                        <div class="bg-slate-50 p-2 rounded"><b>ผู้รับผิดชอบ:</b> ${item.owner}</div>
-                                        <div class="bg-slate-50 p-2 rounded"><b>กำหนดเสร็จ:</b> ${item.dueDate}</div>
-                                        <div class="bg-emerald-50 p-2 rounded text-emerald-600"><b>เสร็จจริง:</b> ${item.actualDate || '-'}</div>
+                                <h3 class="font-bold text-slate-800 text-lg md:text-xl leading-snug">${item.detail}</h3>
+                                <div class="mt-6 flex justify-between items-center no-print border-t pt-4">
+                                    <div class="flex items-center gap-2 text-sm text-slate-500 font-medium"><i data-lucide="user-2" size="16"></i> PIC: ${item.owner}</div>
+                                    <span class="text-blue-600 font-bold text-sm flex items-center gap-1 group-hover:underline transition-all">ดูข้อมูลเพิ่มเติม <i data-lucide="chevron-right" size="16"></i></span>
+                                </div>
+                                <div class="print-full mt-6 border-t pt-6 space-y-4 text-sm">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-slate-50 p-3 rounded-xl border"><b>ผู้รายงาน:</b> ${item.reporter}</div>
+                                        <div class="bg-slate-50 p-3 rounded-xl border"><b>ผู้รับผิดชอบ:</b> ${item.owner}</div>
+                                        <div class="bg-slate-50 p-3 rounded-xl border"><b>วันที่กำหนด:</b> ${item.dueDate}</div>
+                                        <div class="bg-emerald-50 p-3 rounded-xl border text-emerald-600"><b>วันที่เสร็จจริง:</b> ${item.actualDate || '-'}</div>
                                     </div>
-                                    <div class="bg-slate-50 p-2 rounded"><b>วิธีแก้ไข:</b><br>${item.solution || '-'}</div>
-                                    <div class="flex gap-2">
-                                        <img src="${item.imgBefore}" class="w-1/2 rounded border">
-                                        ${item.imgAfter ? `<img src="${item.imgAfter}" class="w-1/2 rounded border">` : ''}
+                                    <div class="bg-slate-50 p-4 rounded-xl border"><b>แนวทางแก้ไข:</b><br>${item.solution || '-'}</div>
+                                    <div class="grid grid-cols-2 gap-6">
+                                        <div class="text-center"><p class="text-[10px] font-bold text-slate-400 mb-2">BEFORE</p><img src="${item.imgBefore}" class="rounded-2xl border w-full"></div>
+                                        <div class="text-center"><p class="text-[10px] font-bold text-slate-400 mb-2">AFTER</p>${item.imgAfter ? `<img src="${item.imgAfter}" class="rounded-2xl border w-full">` : '<div class="h-full border-2 border-dashed rounded-2xl flex items-center justify-center text-slate-300">รอดำเนินการ</div>'}</div>
                                     </div>
                                 </div>
                             </div>`;
@@ -242,25 +259,43 @@
             currentId = id;
             const content = document.getElementById('viewDetailContent');
             content.innerHTML = `
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-blue-50/50 p-3 rounded-xl"><b>👤 ผู้รายงาน:</b><br>${item.reporter}</div>
-                    <div class="bg-green-50/50 p-3 rounded-xl"><b>🛠️ รับผิดชอบ:</b><br>${item.owner}</div>
+                <div class="grid grid-cols-2 gap-4 md:gap-6">
+                    <div class="bg-blue-50/50 p-5 rounded-3xl border border-blue-50">
+                        <b class="text-[10px] uppercase text-blue-400 block mb-1 tracking-widest">Reporter / ผู้รายงาน</b>
+                        <span class="font-bold text-slate-700 text-lg">${item.reporter}</span>
+                    </div>
+                    <div class="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-50">
+                        <b class="text-[10px] uppercase text-emerald-400 block mb-1 tracking-widest">PIC / ผู้รับผิดชอบ</b>
+                        <span class="font-bold text-slate-700 text-lg">${item.owner}</span>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3 text-xs md:text-sm">
-                    <div class="bg-orange-50/50 p-3 rounded-xl text-orange-700"><b>📅 กำหนดเสร็จ:</b><br>${item.dueDate}</div>
-                    <div class="bg-emerald-50/50 p-3 rounded-xl text-emerald-700"><b>✅ เสร็จจริง:</b><br>${item.actualDate || '-'}</div>
+                <div class="grid grid-cols-2 gap-4 md:gap-6">
+                    <div class="bg-orange-50/50 p-5 rounded-3xl border border-orange-50">
+                        <b class="text-[10px] uppercase text-orange-400 block mb-1 tracking-widest">Due Date / กำหนดเสร็จ</b>
+                        <span class="font-bold text-orange-700 text-lg">${item.dueDate}</span>
+                    </div>
+                    <div class="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-50">
+                        <b class="text-[10px] uppercase text-emerald-400 block mb-1 tracking-widest">Actual Date / เสร็จจริง</b>
+                        <span class="font-bold text-emerald-700 text-lg">${item.actualDate || '-'}</span>
+                    </div>
                 </div>
-                <div class="p-4 bg-slate-50 rounded-xl border"><b>⚠️ ปัญหา:</b><br>${item.detail}</div>
-                <div class="p-4 bg-emerald-50/30 rounded-xl border"><b>💡 วิธีแก้ไข:</b><br>${item.solution || '-'}</div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div><p class="text-[9px] font-bold text-red-500 mb-1 uppercase">Before</p><img src="${item.imgBefore}" class="rounded-xl border w-full shadow-sm"></div>
-                    <div><p class="text-[9px] font-bold text-emerald-500 mb-1 uppercase">After</p>${item.imgAfter ? `<img src="${item.imgAfter}" class="rounded-xl border w-full shadow-sm">` : '<div class="h-24 bg-slate-50 rounded-xl border-2 border-dashed flex items-center justify-center text-[9px] text-slate-300">รอรูป After</div>'}</div>
+                <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                    <b class="text-xs uppercase text-slate-400 block mb-2 tracking-widest">⚠️ Problem / ปัญหาที่พบ</b>
+                    <p class="text-slate-700 font-bold text-lg leading-relaxed">${item.detail}</p>
+                </div>
+                <div class="p-6 bg-emerald-50/30 rounded-3xl border border-emerald-50">
+                    <b class="text-xs uppercase text-emerald-400 block mb-2 tracking-widest">💡 Solution / วิธีแก้ไข</b>
+                    <p class="text-slate-700 font-medium text-lg leading-relaxed">${item.solution || '-'}</p>
+                </div>
+                <div class="grid grid-cols-2 gap-6 md:gap-10">
+                    <div><p class="text-xs font-black text-red-500 mb-3 uppercase tracking-tighter">📸 Before</p><img src="${item.imgBefore}" class="rounded-3xl border w-full shadow-md"></div>
+                    <div><p class="text-xs font-black text-emerald-500 mb-3 uppercase tracking-tighter">✅ After</p>${item.imgAfter ? `<img src="${item.imgAfter}" class="rounded-3xl border w-full shadow-md">` : '<div class="h-full bg-slate-50 rounded-3xl border-2 border-dashed flex items-center justify-center text-xs text-slate-300 min-h-[150px]">รอดำเนินการ</div>'}</div>
                 </div>
             `;
             document.getElementById('modal-view').classList.remove('hidden');
             lucide.createIcons();
             
-            document.getElementById('btnDeletePop').onclick = () => { if(confirm('ลบรายการนี้ใช่หรือไม่?')) { remove(ref(db, `patrols/${currentPath}/${id}`)); closeModal('modal-view'); } };
+            document.getElementById('btnDeletePop').onclick = () => { if(confirm('⚠️ ยืนยันการลบรายการนี้ใช่หรือไม่? ข้อมูลจะถูกลบถาวร')) { remove(ref(db, `patrols/${currentPath}/${id}`)); closeModal('modal-view'); } };
             document.getElementById('btnUpdatePop').onclick = () => { closeModal('modal-view'); document.getElementById('modal-update').classList.remove('hidden'); };
         };
 
@@ -283,7 +318,7 @@
 
         document.getElementById('mainForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
+            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังประมวลผล..."; btn.disabled = true;
             const img = await processImg(document.getElementById('imgBefore').files[0]);
             const payload = {
                 postDate: document.getElementById('postDate').value, reporter: document.getElementById('reporter').value,
@@ -292,7 +327,7 @@
                 detail: document.getElementById('detail').value, solution: document.getElementById('solution').value,
                 imgBefore: img || "", status: "รอดำเนินการ", ts: new Date().getTime()
             };
-            push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeModal('modal-form'); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; btn.disabled = false; });
+            push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeModal('modal-form'); e.target.reset(); btn.innerText = "บันทึกข้อมูลเข้าฐานข้อมูล"; btn.disabled = false; });
         };
 
         document.getElementById('saveUpdateBtn').onclick = async () => {
@@ -300,7 +335,7 @@
             const imgAfter = await processImg(document.getElementById('upImgAfter').files[0]);
             const up = { status: document.getElementById('upStatus').value, actualDate: document.getElementById('upActualDate').value };
             if(imgAfter) up.imgAfter = imgAfter;
-            update(ref(db, `patrols/${currentPath}/${currentId}`), up).then(() => { closeModal('modal-update'); btn.innerText = "ยืนยัน"; btn.disabled = false; });
+            update(ref(db, `patrols/${currentPath}/${currentId}`), up).then(() => { closeModal('modal-update'); btn.innerText = "บันทึกอัปเดต"; btn.disabled = false; });
         };
 
         window.goBackHome = () => { document.getElementById('page-list').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); lucide.createIcons(); };
