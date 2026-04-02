@@ -10,28 +10,21 @@
     <style>
         body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; }
         .hidden { display: none !important; }
-        
-        /* Modal Overlay */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px); }
         .modal-box { background: white; width: 100%; max-width: 45rem; border-radius: 1.5rem; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
-        
-        /* หัวข้อแยกสีชัดเจน */
         .label-blue { color: #2563eb; font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; display: block; }
         .label-red { color: #dc2626; font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; display: block; }
         .label-green { color: #16a34a; font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; display: block; }
-        .input-field { border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: 0.2s; }
-        .input-field:focus { border-color: #3b82f6; }
-
+        .input-field { border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; }
         .case-card { background: white; border-radius: 1.25rem; border-left: 8px solid #cbd5e1; cursor: pointer; transition: 0.2s; }
         .Safety { border-left-color: #ef4444; }
         .S5 { border-left-color: #3b82f6; }
         .Other { border-left-color: #8b5cf6; }
-
         @media print {
             .no-print { display: none !important; }
             #page-list { display: block !important; }
             .case-card { break-inside: avoid; border: 1px solid #ddd !important; margin-bottom: 20px; padding: 20px !important; }
-            .print-full { display: block !important; margin-top: 15px; } /* กางออกทั้งหมดตอนพิมพ์ */
+            .print-full { display: block !important; margin-top: 15px; }
         }
         .print-full { display: none; }
     </style>
@@ -59,7 +52,7 @@
             <h2 id="currentMonthTitle" class="font-bold text-slate-800"></h2>
             <div class="flex gap-2">
                 <button onclick="window.print()" class="bg-slate-100 p-2 rounded-xl text-slate-600"><i data-lucide="printer" size="20"></i></button>
-                <button onclick="openForm()" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-blue-100">เพิ่มข้อมูล</button>
+                <button onclick="openForm()" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold shadow-lg">เพิ่มข้อมูล</button>
             </div>
         </nav>
         <div id="dataItems" class="max-w-3xl mx-auto px-4 space-y-4"></div>
@@ -68,14 +61,13 @@
     <div id="modal-view" class="modal-overlay hidden">
         <div class="modal-box">
             <div class="p-5 border-b flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-700">🔍 รายละเอียดข้อมูล</h3>
+                <h3 class="font-bold text-slate-700"><i data-lucide="search" class="inline-block mr-1" size="18"></i> รายละเอียดข้อมูล</h3>
                 <button onclick="closeModal('modal-view')" class="text-slate-400 hover:text-red-500"><i data-lucide="x"></i></button>
             </div>
-            <div id="viewDetailContent" class="overflow-y-auto p-6 space-y-6 bg-white">
-                </div>
+            <div id="viewDetailContent" class="overflow-y-auto p-6 space-y-6 bg-white"></div>
             <div class="p-4 border-t bg-slate-50 flex gap-3">
-                <button id="btnUpdatePop" class="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold">อัปเดตงาน</button>
-                <button id="btnDeletePop" class="px-6 bg-red-50 text-red-500 py-3 rounded-xl font-bold">ลบ</button>
+                <button id="btnUpdatePop" class="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold hover:bg-orange-600">อัปเดตงาน</button>
+                <button id="btnDeletePop" class="px-6 bg-red-50 text-red-500 py-3 rounded-xl font-bold hover:bg-red-100">ลบ</button>
             </div>
         </div>
     </div>
@@ -88,28 +80,28 @@
             </div>
             <form id="mainForm" class="overflow-y-auto p-6 space-y-5">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="label-blue">📅 วันที่ตรวจพบ</label><input type="date" id="postDate" required class="input-field"></div>
-                    <div><label class="label-blue">👤 ชื่อผู้รายงาน</label><input type="text" id="reporter" required class="input-field"></div>
+                    <div><label class="label-blue italic">📅 วันที่ตรวจพบ</label><input type="date" id="postDate" required class="input-field"></div>
+                    <div><label class="label-blue italic">👤 ชื่อผู้รายงาน</label><input type="text" id="reporter" required class="input-field"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="label-blue">📍 แผนก</label>
+                    <div><label class="label-blue italic">📍 แผนก</label>
                         <select id="dept" class="input-field">
                             <option>Welding</option><option>Assembly</option><option>Manufacturing</option><option>Inventory</option><option>อื่นๆ</option>
                         </select>
                     </div>
-                    <div><label class="label-blue">🏷️ หมวดหมู่</label>
+                    <div><label class="label-blue italic">🏷️ หมวดหมู่</label>
                         <select id="category" class="input-field">
                             <option value="Safety">Safety</option><option value="S5">5S</option><option value="Other">อื่นๆ</option>
                         </select>
                     </div>
                 </div>
-                <div><label class="label-red">⚠️ รายละเอียดปัญหา</label><textarea id="detail" rows="3" required class="input-field border-red-100"></textarea></div>
-                <div><label class="label-red">📸 รูปภาพก่อนแก้ไข</label><input type="file" id="imgBefore" accept="image/*" class="w-full text-sm"></div>
+                <div><label class="label-red italic">⚠️ รายละเอียดปัญหา</label><textarea id="detail" rows="3" required class="input-field border-red-100"></textarea></div>
+                <div><label class="label-red italic">📸 รูปภาพก่อนแก้ไข</label><input type="file" id="imgBefore" accept="image/*" class="w-full text-sm"></div>
                 <div class="bg-green-50 p-4 rounded-xl space-y-4">
-                    <div><label class="label-green">🛠️ แนวทางแก้ไข</label><textarea id="solution" rows="2" class="input-field border-green-100"></textarea></div>
+                    <div><label class="label-green italic">🛠️ แนวทางแก้ไข</label><textarea id="solution" rows="2" class="input-field border-green-100"></textarea></div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label class="label-green">👷 ผู้รับผิดชอบ (PIC)</label><input type="text" id="owner" required class="input-field border-green-100"></div>
-                        <div><label class="label-green">⏱️ กำหนดเสร็จ</label><input type="date" id="dueDate" required class="input-field border-green-100"></div>
+                        <div><label class="label-green italic">👷 ผู้รับผิดชอบ (PIC)</label><input type="text" id="owner" required class="input-field border-green-100"></div>
+                        <div><label class="label-green italic">⏱️ กำหนดเสร็จ</label><input type="date" id="dueDate" required class="input-field border-green-100"></div>
                     </div>
                 </div>
                 <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg">บันทึกข้อมูล</button>
@@ -119,7 +111,10 @@
 
     <div id="modal-update" class="modal-overlay hidden">
         <div class="modal-box max-w-md">
-            <div class="p-5 border-b bg-orange-50 font-bold text-orange-700">อัปเดตสถานะงาน</div>
+            <div class="p-5 border-b bg-orange-50 font-bold text-orange-700 flex justify-between items-center">
+                <span>อัปเดตสถานะงาน</span>
+                <button onclick="closeModal('modal-update')"><i data-lucide="x"></i></button>
+            </div>
             <div class="p-6 space-y-4">
                 <div><label class="text-xs font-bold">วันที่แก้ไขจริง</label><input type="date" id="upActualDate" class="input-field"></div>
                 <div><label class="text-xs font-bold">สถานะ</label>
@@ -127,7 +122,7 @@
                 </div>
                 <div><label class="text-xs font-bold">รูปถ่ายหลังแก้ไข</label><input type="file" id="upImgAfter" class="w-full text-sm"></div>
                 <div class="flex gap-2 pt-4">
-                    <button onclick="closeModal('modal-update')" class="flex-1 py-3 bg-slate-100 font-bold rounded-xl">ยกเลิก</button>
+                    <button onclick="closeModal('modal-update')" class="flex-1 py-3 bg-slate-100 font-bold rounded-xl text-slate-500">ยกเลิก</button>
                     <button id="saveUpdateBtn" class="flex-1 py-3 bg-orange-500 text-white font-bold rounded-xl">บันทึก</button>
                 </div>
             </div>
@@ -145,7 +140,7 @@
         let currentPath = "", currentId = "";
 
         const yearSelect = document.getElementById('yearSelect');
-        for (let y = 2026; y <= 2030; y++) {
+        for (let y = 2026; y <= 2099; y++) {
             const opt = document.createElement('option'); opt.value = y; opt.innerText = y; yearSelect.appendChild(opt);
         }
 
@@ -154,16 +149,23 @@
             months.forEach((m, i) => {
                 const mid = `${yearSelect.value}-${String(i + 1).padStart(2, '0')}`;
                 const div = document.createElement('div');
-                div.className = 'bg-white p-6 rounded-3xl border cursor-pointer hover:border-blue-500 transition-all';
-                div.innerHTML = `<div class="font-bold text-slate-700 text-lg mb-3">${m}</div><div id="stats-${mid}"></div>`;
+                div.className = 'bg-white p-6 rounded-3xl border cursor-pointer hover:border-blue-500 transition-all shadow-sm';
+                div.innerHTML = `<div class="font-bold text-slate-700 text-lg mb-4 flex items-center justify-between">${m} <i data-lucide="calendar" size="16" class="text-slate-300"></i></div><div id="stats-${mid}"></div>`;
                 onValue(ref(db, `patrols/${mid}`), (snap) => {
                     const data = snap.val();
                     const statsDiv = document.getElementById(`stats-${mid}`);
                     if (data) {
-                        const total = Object.keys(data).length;
-                        const done = Object.values(data).filter(v => v.status === 'เสร็จสิ้น').length;
-                        statsDiv.innerHTML = `<div class="text-xs space-y-1"><p>พบ: <b>${total}</b></p><p class="text-green-600">เสร็จ: <b>${done}</b></p></div>`;
-                    } else { statsDiv.innerHTML = `<span class="text-[10px] text-slate-300 italic">ไม่มีข้อมูล</span>`; }
+                        const items = Object.values(data);
+                        const total = items.length;
+                        const done = items.filter(v => v.status === 'เสร็จสิ้น').length;
+                        const pending = total - done;
+                        statsDiv.innerHTML = `
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between text-xs py-1 px-2 bg-blue-50 rounded text-blue-700"><span>พบทั้งหมด</span> <b>${total}</b></div>
+                                <div class="flex justify-between text-xs py-1 px-2 bg-green-50 rounded text-green-700"><span>แก้ไปแล้ว</span> <b>${done}</b></div>
+                                <div class="flex justify-between text-xs py-1 px-2 bg-orange-50 rounded text-orange-700"><span>คงเหลือ</span> <b>${pending}</b></div>
+                            </div>`;
+                    } else { statsDiv.innerHTML = `<span class="text-[10px] text-slate-300 italic">ไม่มีข้อมูลการตรวจ</span>`; }
                 });
                 div.onclick = () => { currentPath = mid; document.getElementById('page-home').classList.add('hidden'); document.getElementById('page-list').classList.remove('hidden'); document.getElementById('currentMonthTitle').innerText = `${m} ${yearSelect.value}`; listenData(); };
                 grid.appendChild(div);
@@ -185,12 +187,15 @@
                                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isDone ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">${item.status}</span>
                                 </div>
                                 <h3 class="font-bold text-slate-800">${item.detail}</h3>
-                                <div class="print-full text-xs space-y-2 mt-4">
+                                <div class="print-full text-xs space-y-3 mt-4 border-t pt-3">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <p><b>ผู้รับผิดชอบ:</b> ${item.owner}</p>
+                                        <p><b>วันที่ต้องเสร็จ:</b> ${item.dueDate}</p>
+                                    </div>
                                     <p><b>แนวทางแก้ไข:</b> ${item.solution || '-'}</p>
-                                    <p><b>PIC:</b> ${item.owner} | <b>กำหนด:</b> ${item.dueDate}</p>
                                     <div class="grid grid-cols-2 gap-2 mt-2">
-                                        <img src="${item.imgBefore}" class="rounded border">
-                                        ${item.imgAfter ? `<img src="${item.imgAfter}" class="rounded border">` : ''}
+                                        <div><p class="text-[10px] text-red-500 font-bold mb-1">BEFORE</p><img src="${item.imgBefore}" class="rounded border"></div>
+                                        ${item.imgAfter ? `<div><p class="text-[10px] text-green-500 font-bold mb-1">AFTER</p><img src="${item.imgAfter}" class="rounded border"></div>` : ''}
                                     </div>
                                 </div>
                             </div>`;
@@ -204,20 +209,25 @@
             currentId = id;
             const content = document.getElementById('viewDetailContent');
             content.innerHTML = `
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <div class="bg-blue-50 p-3 rounded-xl"><b>ผู้รายงาน:</b><br>${item.reporter}</div>
-                    <div class="bg-green-50 p-3 rounded-xl"><b>ผู้รับผิดชอบ:</b><br>${item.owner}</div>
+                <div class="grid grid-cols-2 gap-4 text-[13px]">
+                    <div class="bg-blue-50 p-4 rounded-2xl"><b><i data-lucide="user" size="14" class="inline mb-1"></i> ผู้รายงาน:</b><br>${item.reporter}</div>
+                    <div class="bg-green-50 p-4 rounded-2xl"><b><i data-lucide="wrench" size="14" class="inline mb-1"></i> ผู้รับผิดชอบ (PIC):</b><br>${item.owner}</div>
                 </div>
-                <div class="p-4 bg-slate-50 rounded-xl"><b>รายละเอียดปัญหา:</b><br>${item.detail}</div>
-                <div class="p-4 bg-orange-50 rounded-xl"><b>แนวทางแก้ไข:</b><br>${item.solution || '-'}</div>
+                <div class="grid grid-cols-2 gap-4 text-[13px]">
+                    <div class="bg-orange-50 p-4 rounded-2xl text-orange-700"><b>📅 วันที่กำหนดเสร็จ:</b><br>${item.dueDate}</div>
+                    <div class="bg-green-50 p-4 rounded-2xl text-green-700"><b>✅ วันแก้ไขเสร็จจริง:</b><br>${item.actualDate || '-'}</div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-2xl text-[13px]"><b>⚠️ รายละเอียดปัญหา:</b><br>${item.detail}</div>
+                <div class="p-4 bg-slate-50 rounded-2xl text-[13px]"><b>🛠️ แนวทางแก้ไข:</b><br>${item.solution || '-'}</div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><p class="text-[10px] font-bold text-red-500 mb-1">📸 BEFORE</p><img src="${item.imgBefore}" class="rounded-xl border w-full"></div>
-                    <div><p class="text-[10px] font-bold text-green-500 mb-1">✅ AFTER</p>${item.imgAfter ? `<img src="${item.imgAfter}" class="rounded-xl border w-full">` : '<div class="h-24 bg-slate-100 rounded-xl flex items-center justify-center text-[10px] text-slate-400">รอแก้ไข</div>'}</div>
+                    <div><p class="text-[10px] font-bold text-red-500 mb-1 uppercase">📸 Before</p><img src="${item.imgBefore}" class="rounded-2xl border w-full shadow-sm"></div>
+                    <div><p class="text-[10px] font-bold text-green-500 mb-1 uppercase">✅ After</p>${item.imgAfter ? `<img src="${item.imgAfter}" class="rounded-2xl border w-full shadow-sm">` : '<div class="h-32 bg-slate-100 rounded-2xl flex items-center justify-center text-[10px] text-slate-400 border-2 border-dashed">รอการแก้ไข</div>'}</div>
                 </div>
             `;
             document.getElementById('modal-view').classList.remove('hidden');
-            document.getElementById('btnUpdatePop').onclick = () => { closeModal('modal-view'); document.getElementById('modal-update').classList.remove('hidden'); };
-            document.getElementById('btnDeletePop').onclick = () => { if(confirm('ลบ?')) { remove(ref(db, `patrols/${currentPath}/${id}`)); closeModal('modal-view'); } };
+            lucide.createIcons();
+            document.getElementById('btnUpdatePop').onclick = () => { closeModal('modal-view'); document.getElementById('modal-update').classList.remove('hidden'); lucide.createIcons(); };
+            document.getElementById('btnDeletePop').onclick = () => { if(confirm('ยืนยันการลบข้อมูลนี้หรือไม่?')) { remove(ref(db, `patrols/${currentPath}/${id}`)); closeModal('modal-view'); } };
         };
 
         const processImg = async (file) => {
@@ -239,7 +249,7 @@
 
         document.getElementById('mainForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึก...";
+            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
             const img = await processImg(document.getElementById('imgBefore').files[0]);
             const payload = {
                 postDate: document.getElementById('postDate').value, reporter: document.getElementById('reporter').value,
@@ -248,19 +258,19 @@
                 detail: document.getElementById('detail').value, solution: document.getElementById('solution').value,
                 imgBefore: img || "", status: "รอดำเนินการ", ts: new Date().getTime()
             };
-            push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeModal('modal-form'); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; });
+            push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeModal('modal-form'); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; btn.disabled = false; });
         };
 
         document.getElementById('saveUpdateBtn').onclick = async () => {
-            const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "รอสักครู่...";
+            const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "กำลังบันทึก...";
             const imgAfter = await processImg(document.getElementById('upImgAfter').files[0]);
             const up = { status: document.getElementById('upStatus').value, actualDate: document.getElementById('upActualDate').value };
             if(imgAfter) up.imgAfter = imgAfter;
             update(ref(db, `patrols/${currentPath}/${currentId}`), up).then(() => { closeModal('modal-update'); btn.innerText = "บันทึก"; });
         };
 
-        window.goBackHome = () => { document.getElementById('page-list').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); };
-        window.openForm = () => document.getElementById('modal-form').classList.remove('hidden');
+        window.goBackHome = () => { document.getElementById('page-list').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); lucide.createIcons(); };
+        window.openForm = () => { document.getElementById('modal-form').classList.remove('hidden'); lucide.createIcons(); };
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
         yearSelect.onchange = initHome;
         initHome();
