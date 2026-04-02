@@ -20,15 +20,16 @@
         .scroll-area { overflow-y: auto; flex: 1; padding: 1.5rem; }
         .nav-sticky { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #e2e8f0; padding: 1rem 1.5rem; }
 
+        /* การตั้งค่าสำหรับการพิมพ์รายงาน */
         @media print {
             body { background: white !important; padding: 0 !important; }
-            .nav-sticky, button, .modal-overlay, #page-home, #deleteBtn { display: none !important; }
+            .nav-sticky, button, .modal-overlay, #page-home, #deleteBtn, .print-none { display: none !important; }
             #page-list { display: block !important; width: 100% !important; padding: 0 !important; }
             .print-header { display: block !important; margin-bottom: 30px; border-bottom: 3px solid #334e68; padding-bottom: 15px; }
-            .case-card { border: 2px solid #edf2f7 !important; margin-bottom: 25px !important; padding: 20px !important; break-inside: avoid; page-break-inside: avoid; border-radius: 15px !important; }
+            .case-card { border: 2px solid #edf2f7 !important; margin-bottom: 25px !important; padding: 20px !important; break-inside: avoid; page-break-inside: avoid; border-radius: 15px !important; box-shadow: none !important; }
             .print-details { display: block !important; margin-top: 15px; font-size: 14px; line-height: 1.6; }
             .print-grid { display: grid !important; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-            .print-img { width: 100% !important; height: 180px !important; object-fit: cover !important; border-radius: 8px !important; border: 1px solid #ddd !important; }
+            .print-img { width: 100% !important; height: 220px !important; object-fit: cover !important; border-radius: 8px !important; border: 1px solid #eee !important; }
         }
         .print-header, .print-details, .print-grid { display: none; }
     </style>
@@ -93,10 +94,7 @@
                     <div><label class="text-xs font-bold text-red-500">ปัญหาที่พบ</label><textarea id="detail" rows="3" placeholder="ระบุสิ่งที่พบ..." required class="input-box border-red-100"></textarea></div>
                     <div><label class="text-xs font-bold text-green-600">แนวทางการแก้ไข</label><textarea id="solution" rows="2" placeholder="วิธีแก้ไข..." class="input-box border-green-100"></textarea></div>
                     <div><label class="text-xs font-bold text-slate-600">📸 แนบรูปภาพก่อนแก้ไข</label><input type="file" id="imgBefore" accept="image/*" class="text-sm block w-full mt-2"></div>
-                    <div class="flex gap-4">
-                        <button type="button" onclick="closeForm()" class="flex-1 bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold">ยกเลิก</button>
-                        <button type="submit" id="submitBtn" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-blue-200 shadow-lg">บันทึกข้อมูล</button>
-                    </div>
+                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">บันทึกข้อมูล</button>
                 </form>
             </div>
         </div>
@@ -105,21 +103,19 @@
     <div id="modal-detail" class="modal-overlay hidden">
         <div class="modal-container">
             <div class="p-6 border-b flex justify-between items-center">
-                <button id="deleteBtn" class="flex items-center gap-2 text-red-500 text-xs font-bold bg-red-50 px-4 py-2 rounded-lg"><i data-lucide="trash-2" size="14"></i> ลบข้อมูล</button>
-                <button onclick="document.getElementById('modal-detail').classList.add('hidden')" class="text-slate-400"><i data-lucide="x" size="24"></i></button>
+                <button id="deleteBtn" class="text-red-500 font-bold text-xs bg-red-50 px-4 py-2 rounded-lg">ลบข้อมูล</button>
+                <button onclick="document.getElementById('modal-detail').classList.add('hidden')"><i data-lucide="x"></i></button>
             </div>
             <div class="scroll-area bg-slate-50" id="detailScrollBody">
                 <div id="detailViewContent" class="space-y-6"></div>
                 <div id="updateSection" class="mt-8 bg-white p-6 rounded-3xl border border-orange-100 shadow-sm">
-                    <h4 class="font-bold text-orange-700 mb-6 flex items-center gap-2 text-lg"><i data-lucide="wrench"></i> อัปเดตการแก้ไขงาน</h4>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="text-[10px] font-bold text-slate-400 mb-1 block">วันที่แก้ไขจริง</label><input type="date" id="upActualDate" class="input-box"></div>
-                            <div><label class="text-[10px] font-bold text-slate-400 mb-1 block">เปลี่ยนสถานะ</label><select id="upStatus" class="input-box"><option value="รอดำเนินการ">รอดำเนินการ</option><option value="เสร็จสิ้น">เสร็จสิ้น</option></select></div>
-                        </div>
-                        <div><label class="text-[10px] font-bold text-slate-400 mb-1 block">📸 รูปภาพหลังแก้ไข</label><input type="file" id="upImgAfter" accept="image/*" class="text-sm block w-full"></div>
-                        <button id="saveUpdateBtn" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold">บันทึกการแก้ไข</button>
+                    <h4 class="font-bold text-orange-700 mb-6 flex items-center gap-2"><i data-lucide="wrench"></i> อัปเดตงานแก้ไข</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input type="date" id="upActualDate" class="input-box">
+                        <select id="upStatus" class="input-box"><option value="รอดำเนินการ">รอดำเนินการ</option><option value="เสร็จสิ้น">เสร็จสิ้น</option></select>
                     </div>
+                    <input type="file" id="upImgAfter" class="mb-4 text-sm block w-full">
+                    <button id="saveUpdateBtn" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold">บันทึกการอัปเดต</button>
                 </div>
             </div>
         </div>
@@ -136,8 +132,11 @@
         let currentPath = "";
         let currentEditingId = "";
 
+        // ปรับปรุงปีให้ถึง 2099
         const yearSelect = document.getElementById('yearSelect');
-        for (let y = 2026; y <= 2030; y++) {
+        const startYear = 2026;
+        const endYear = 2099;
+        for (let y = startYear; y <= endYear; y++) {
             const opt = document.createElement('option'); opt.value = y; opt.innerText = y; yearSelect.appendChild(opt);
         }
 
@@ -149,13 +148,14 @@
                 const div = document.createElement('div');
                 div.className = 'month-card';
                 div.innerHTML = `<div class="font-bold text-slate-800 text-xl mb-4">${m}</div><div id="stats-${monthId}"></div>`;
+                
                 onValue(ref(db, `patrols/${monthId}`), (snap) => {
                     const statsDiv = document.getElementById(`stats-${monthId}`);
                     const data = snap.val();
                     if (data) {
                         const total = Object.keys(data).length;
                         const done = Object.values(data).filter(v => v.status === 'เสร็จสิ้น').length;
-                        const pending = total - done; // แก้ไขสถานะคงเหลือ
+                        const pending = total - done; // แสดงสถานะคงเหลือ
                         statsDiv.innerHTML = `
                             <div class="stat-badge bg-blue-50 text-blue-600"><span>พบทั้งหมด</span> <span>${total}</span></div>
                             <div class="stat-badge bg-green-50 text-green-600"><span>เสร็จสิ้น</span> <span>${done}</span></div>
@@ -163,6 +163,7 @@
                         `;
                     } else { statsDiv.innerHTML = `<div class="text-[10px] text-slate-300 py-4 font-bold uppercase">ไม่มีข้อมูล</div>`; }
                 });
+
                 div.onclick = () => { 
                     currentPath = monthId; 
                     document.getElementById('page-home').classList.add('hidden'); 
@@ -184,7 +185,7 @@
                 if (data) {
                     const total = Object.keys(data).length;
                     const done = Object.values(data).filter(v => v.status === 'เสร็จสิ้น').length;
-                    document.getElementById('print-summary-box').innerText = `สรุป: พบ ${total} | เสร็จ ${done} | ค้าง ${total-done}`;
+                    document.getElementById('print-summary-box').innerText = `สรุปผล: พบ ${total} | เสร็จ ${done} | ค้าง ${total-done}`;
 
                     Object.entries(data).reverse().forEach(([id, item]) => {
                         const isDone = item.status === 'เสร็จสิ้น';
@@ -204,7 +205,7 @@
                                     </div>
                                     <div class="print-grid">
                                         <img src="${item.imgBefore}" class="print-img">
-                                        ${item.imgAfter ? `<img src="${item.imgAfter}" class="print-img">` : '<div style="border:1px dashed #ccc; height:180px;"></div>'}
+                                        ${item.imgAfter ? `<img src="${item.imgAfter}" class="print-img">` : '<div style="border:1px dashed #ccc; height:220px; display:flex; align-items:center; justify-content:center;">รอรูปภาพแก้ไข...</div>'}
                                     </div>
                                 </div>
 
@@ -227,19 +228,18 @@
 
             content.innerHTML = `
                 <div class="bg-white p-6 rounded-3xl border shadow-sm">
-                    <div class="flex items-center gap-2 text-blue-600 font-bold text-xs mb-4 uppercase"><i data-lucide="info"></i> รายละเอียด</div>
                     <h2 class="text-xl font-bold text-slate-800 mb-6">${item.detail}</h2>
-                    <div class="space-y-4">
-                        <div class="p-4 bg-slate-50 rounded-2xl"><p class="text-[10px] font-bold text-slate-400 uppercase mb-1">แนวทางการแก้ไข</p><p>${item.solution || '-'}</p></div>
+                    <div class="space-y-4 text-sm">
+                        <div class="p-4 bg-slate-50 rounded-2xl"><p class="text-[10px] font-bold text-slate-400 uppercase">แนวทางแก้ไข</p><p>${item.solution || '-'}</p></div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="p-4 bg-blue-50/50 rounded-2xl"><p class="text-[10px] font-bold text-blue-400 uppercase mb-1">ผู้รับผิดชอบ (PIC)</p><p class="font-bold">${item.owner}</p></div>
-                            <div class="p-4 bg-green-50/50 rounded-2xl"><p class="text-[10px] font-bold text-green-400 uppercase mb-1">ผู้รายงาน (Reporter)</p><p class="font-bold">${item.reporter}</p></div>
+                            <div class="p-4 bg-blue-50/50 rounded-2xl"><p class="text-[10px] font-bold text-blue-400 uppercase">PIC</p><p class="font-bold">${item.owner}</p></div>
+                            <div class="p-4 bg-green-50/50 rounded-2xl"><p class="text-[10px] font-bold text-green-400 uppercase">Reporter</p><p class="font-bold">${item.reporter}</p></div>
                         </div>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><p class="text-xs font-bold text-slate-500 mb-2">📸 รูปก่อนแก้ไข</p><img src="${item.imgBefore}" class="img-preview"></div>
-                    ${item.imgAfter ? `<div><p class="text-xs font-bold text-green-600 mb-2">✅ รูปหลังแก้ไข (เสร็จ: ${item.actualDate})</p><img src="${item.imgAfter}" class="img-preview border-4 border-green-400"></div>` : ''}
+                    <img src="${item.imgBefore}" class="img-preview">
+                    ${item.imgAfter ? `<img src="${item.imgAfter}" class="img-preview border-4 border-green-400">` : ''}
                 </div>
             `;
             document.getElementById('modal-detail').classList.remove('hidden');
@@ -265,7 +265,7 @@
 
         document.getElementById('mainForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึก...";
+            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
             const imgData = await processImg(document.getElementById('imgBefore').files[0]);
             const payload = {
                 postDate: document.getElementById('postDate').value, reporter: document.getElementById('reporter').value,
@@ -274,19 +274,23 @@
                 detail: document.getElementById('detail').value, solution: document.getElementById('solution').value,
                 imgBefore: imgData || "", imgAfter: "", status: "รอดำเนินการ", ts: new Date().getTime()
             };
-            push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeForm(); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; });
+            push(ref(db, `patrols/${currentPath}`), payload).then(() => { 
+                closeForm(); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; btn.disabled = false; 
+            });
         };
 
         document.getElementById('saveUpdateBtn').onclick = async () => {
-            const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "กำลังบันทึก...";
+            const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
             const imgAfterData = await processImg(document.getElementById('upImgAfter').files[0]);
             const updates = { status: document.getElementById('upStatus').value };
             if(imgAfterData) updates.imgAfter = imgAfterData;
             if(document.getElementById('upActualDate').value) updates.actualDate = document.getElementById('upActualDate').value;
-            update(ref(db, `patrols/${currentPath}/${currentEditingId}`), updates).then(() => { document.getElementById('modal-detail').classList.add('hidden'); btn.innerText = "บันทึกการแก้ไข"; });
+            update(ref(db, `patrols/${currentPath}/${currentEditingId}`), updates).then(() => { 
+                document.getElementById('modal-detail').classList.add('hidden'); btn.innerText = "บันทึกการอัปเดต"; btn.disabled = false;
+            });
         };
 
-        document.getElementById('deleteBtn').onclick = () => { if (confirm(`ลบข้อมูล?`)) remove(ref(db, `patrols/${currentPath}/${currentEditingId}`)).then(() => document.getElementById('modal-detail').classList.add('hidden')); };
+        document.getElementById('deleteBtn').onclick = () => { if (confirm(`ลบข้อมูลนี้ใช่หรือไม่?`)) remove(ref(db, `patrols/${currentPath}/${currentEditingId}`)).then(() => document.getElementById('modal-detail').classList.add('hidden')); };
         window.goBackHome = () => { document.getElementById('page-list').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); };
         window.openForm = () => document.getElementById('modal-form').classList.remove('hidden');
         window.closeForm = () => document.getElementById('modal-form').classList.add('hidden');
