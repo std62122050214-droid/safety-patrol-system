@@ -91,7 +91,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="text-[11px] font-bold text-slate-400 mb-2 block uppercase">🏷️ หมวดหมู่ (เลือกได้หลายข้อ)</label>
+                    <label class="text-[11px] font-bold text-slate-400 mb-2 block uppercase">🏷️ หมวดหมู่ (เลือกได้มากกว่า 1)</label>
                     <div class="flex flex-wrap gap-4 bg-slate-50 p-4 rounded-xl border border-dashed">
                         <label class="flex items-center gap-2 cursor-pointer font-bold text-red-500"><input type="checkbox" name="cat" value="Safety" class="w-4 h-4"> Safety</label>
                         <label class="flex items-center gap-2 cursor-pointer font-bold text-blue-500"><input type="checkbox" name="cat" value="5S" class="w-4 h-4"> 5S</label>
@@ -151,6 +151,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // Firebase Configuration
         const app = initializeApp({ databaseURL: "https://robust-helix-471007-m7-default-rtdb.asia-southeast1.firebasedatabase.app/" });
         const db = getDatabase(app);
 
@@ -158,35 +159,52 @@
         let currentPath = "", currentId = "";
 
         const yearSelect = document.getElementById('yearSelect');
-        for (let y = 2026; y <= 2099; y++) {
+        for (let y = 2026; y <= 2030; y++) {
             const opt = document.createElement('option'); opt.value = y; opt.innerText = y; yearSelect.appendChild(opt);
         }
 
+        // หน้าแรก: Dashboard รายเดือน
         function initHome() {
             const grid = document.getElementById('monthGrid'); grid.innerHTML = "";
             months.forEach((m, i) => {
                 const mid = `${yearSelect.value}-${String(i + 1).padStart(2, '0')}`;
                 const div = document.createElement('div');
                 div.className = 'month-card cursor-pointer group';
-                div.innerHTML = `<div class="font-bold text-slate-700 text-lg mb-4 flex justify-between items-center">${m} <i data-lucide="chevron-right" size="18" class="text-slate-200 group-hover:text-blue-500 transition-colors"></i></div><div id="stats-${mid}"></div>`;
+                div.innerHTML = `<div class="font-bold text-slate-700 text-lg mb-2 flex justify-between items-center">${m} <i data-lucide="chevron-right" size="18" class="text-slate-200 group-hover:text-blue-500 transition-colors"></i></div><div id="stats-${mid}"></div>`;
+                
                 onValue(ref(db, `patrols/${mid}`), (snap) => {
                     const data = snap.val();
                     const statsDiv = document.getElementById(`stats-${mid}`);
                     if (data) {
                         const items = Object.values(data);
-                        const total = items.length, done = items.filter(v => v.status === 'เสร็จสิ้น').length;
-                        statsDiv.innerHTML = `<div class="space-y-2">
-                            <div class="flex justify-between text-[11px] py-1.5 px-3 bg-blue-50 rounded-lg text-blue-600 font-bold"><span>ตรวจพบ</span> <span>${total}</span></div>
-                            <div class="flex justify-between text-[11px] py-1.5 px-3 bg-emerald-50 rounded-lg text-emerald-600 font-bold"><span>เสร็จสิ้น</span> <span>${done}</span></div>
-                        </div>`;
-                    } else { statsDiv.innerHTML = `<span class="text-xs text-slate-300 italic uppercase">No Data</span>`; }
+                        const total = items.length;
+                        const done = items.filter(v => v.status === 'เสร็จสิ้น').length;
+                        const remaining = total - done;
+
+                        statsDiv.innerHTML = `
+                            <div class="space-y-1.5 mt-2">
+                                <div class="flex justify-between text-[11px] py-1.5 px-3 bg-blue-50 rounded-lg text-blue-600 font-bold"><span>ตรวจพบทั้งหมด</span> <span>${total}</span></div>
+                                <div class="flex justify-between text-[11px] py-1.5 px-3 bg-emerald-50 rounded-lg text-emerald-600 font-bold"><span>แก้ไขเสร็จแล้ว</span> <span>${done}</span></div>
+                                <div class="flex justify-between text-[11px] py-1.5 px-3 bg-orange-50 rounded-lg text-orange-600 font-bold"><span>คงเหลือที่ต้องแก้</span> <span>${remaining}</span></div>
+                            </div>`;
+                    } else { 
+                        statsDiv.innerHTML = `<div class="text-xs text-slate-300 italic uppercase mt-2 text-center py-4">No Data</div>`; 
+                    }
                     lucide.createIcons();
                 });
-                div.onclick = () => { currentPath = mid; document.getElementById('page-home').classList.add('hidden'); document.getElementById('page-list').classList.remove('hidden'); document.getElementById('currentMonthTitle').innerText = `${m} ${yearSelect.value}`; listenData(); };
+
+                div.onclick = () => { 
+                    currentPath = mid; 
+                    document.getElementById('page-home').classList.add('hidden'); 
+                    document.getElementById('page-list').classList.remove('hidden'); 
+                    document.getElementById('currentMonthTitle').innerText = `${m} ${yearSelect.value}`; 
+                    listenData(); 
+                };
                 grid.appendChild(div);
             });
         }
 
+        // ดึงข้อมูลรายการ
         function listenData() {
             onValue(ref(db, `patrols/${currentPath}`), (snap) => {
                 const container = document.getElementById('dataItems'); container.innerHTML = "";
@@ -222,21 +240,21 @@
             });
         }
 
+        // รายละเอียดงาน
         window.viewDetail = (id, item) => {
             currentId = id;
             const content = document.getElementById('viewDetailContent');
-            const cats = Array.isArray(item.category) ? item.category : [item.category];
             content.innerHTML = `
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-blue-50 p-4 rounded-2xl border"><b class="text-[10px] text-blue-400 block mb-1">แจ้งโดยใคร (REPORTER)</b><span class="font-bold text-slate-700">${item.reporter}</span></div>
-                    <div class="bg-emerald-50 p-4 rounded-2xl border"><b class="text-[10px] text-emerald-400 block mb-1">ผู้รับผิดชอบ (OWNER)</b><span class="font-bold text-slate-700">${item.owner}</span></div>
+                    <div class="bg-blue-50 p-4 rounded-2xl border"><b class="text-[10px] text-blue-400 block mb-1 uppercase">แจ้งโดยใคร</b><span class="font-bold text-slate-700">${item.reporter}</span></div>
+                    <div class="bg-emerald-50 p-4 rounded-2xl border"><b class="text-[10px] text-emerald-400 block mb-1 uppercase">ผู้รับผิดชอบ</b><span class="font-bold text-slate-700">${item.owner}</span></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-orange-50 p-4 rounded-2xl border"><b class="text-[10px] text-orange-400 block mb-1">กำหนดเสร็จ</b><span class="font-bold text-orange-700">${item.dueDate}</span></div>
                     <div class="bg-emerald-50 p-4 rounded-2xl border"><b class="text-[10px] text-emerald-400 block mb-1">เสร็จจริง</b><span class="font-bold text-emerald-700">${item.actualDate || '-'}</span></div>
                 </div>
                 <div class="p-5 bg-slate-50 rounded-2xl border">
-                    <b class="text-xs text-slate-400 block mb-2 italic">⚠️ ปัญหาที่พบ</b>
+                    <b class="text-xs text-slate-400 block mb-2 italic">⚠️ รายละเอียดปัญหา</b>
                     <p class="text-slate-700 font-bold text-base">${item.detail}</p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -248,6 +266,7 @@
             document.getElementById('btnUpdatePop').onclick = () => { closeModal('modal-view'); document.getElementById('modal-update').classList.remove('hidden'); };
         };
 
+        // ย่อขนาดรูปภาพ
         const processImg = async (file) => {
             if (!file) return null;
             return new Promise((res) => {
@@ -265,6 +284,7 @@
             });
         };
 
+        // ส่งฟอร์มเพิ่มข้อมูล
         document.getElementById('mainForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
@@ -281,6 +301,7 @@
             push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeModal('modal-form'); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; btn.disabled = false; });
         };
 
+        // ส่งฟอร์มอัปเดต
         document.getElementById('saveUpdateBtn').onclick = async () => {
             const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
             const imgAfter = await processImg(document.getElementById('upImgAfter').files[0]);
@@ -288,14 +309,11 @@
             
             const up = { status: document.getElementById('upStatus').value, actualDate: document.getElementById('upActualDate').value };
             if(imgAfter) up.imgAfter = imgAfter;
-            if(imgBeforeEdit) up.imgBefore = imgBeforeEdit; // แก้ไขรูป Before
+            if(imgBeforeEdit) up.imgBefore = imgBeforeEdit;
 
             update(ref(db, `patrols/${currentPath}/${currentId}`), up).then(() => { 
-                closeModal('modal-update'); 
-                btn.innerText = "บันทึกอัปเดต"; 
-                btn.disabled = false; 
-                document.getElementById('upImgAfter').value = "";
-                document.getElementById('upImgBefore').value = "";
+                closeModal('modal-update'); btn.innerText = "บันทึกอัปเดต"; btn.disabled = false; 
+                document.getElementById('upImgAfter').value = ""; document.getElementById('upImgBefore').value = "";
             });
         };
 
