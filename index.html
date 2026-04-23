@@ -9,18 +9,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .input-field { border: 1.5px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; }
+        .input-field { border: 1.5px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: 0.2s; }
+        .input-field:focus { border-color: #3b82f6; ring: 2px; ring-color: #bfdbfe; }
+        
+        /* สไตล์สถานะตามตัวอย่างภาพ */
         .status-badge { font-size: 10px; font-weight: bold; padding: 4px 14px; border-radius: 9999px; text-transform: uppercase; white-space: nowrap; }
         .status-pending { background-color: #fee2e2; color: #ef4444; }
         .status-complete { background-color: #d1fae5; color: #10b981; }
 
         @media print {
-            .no-print, button, nav { display: none !important; }
-            body { background: white; padding: 0; }
-            #dataItems { display: block !important; width: 100%; }
-            .report-card { border: 1px solid #eee; margin-bottom: 20px; page-break-inside: avoid; border-radius: 12px; padding: 15px; }
-            .print-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 10px; margin-top: 10px; }
-            img { max-width: 100% !important; border-radius: 8px; }
+            .no-print, button, nav, .year-selector { display: none !important; }
+            body { background: white; padding: 0; margin: 0; }
+            .modal-overlay { position: static; background: none; display: block; padding: 0; }
+            .modal-box { max-width: 100%; box-shadow: none; overflow: visible; border: none; padding: 0; }
+            .print-container { display: block !important; width: 100%; }
+            .print-item-card { border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid; }
+            img { max-width: 320px !important; border-radius: 12px; margin-top: 10px; }
         }
     </style>
 </head>
@@ -38,73 +42,98 @@
     </div>
 
     <div id="page-list" class="hidden min-h-screen pb-12">
-        <nav class="sticky top-0 z-50 bg-white border-b p-4 no-print shadow-sm flex justify-between items-center">
+        <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b p-4 no-print shadow-sm flex justify-between items-center">
             <button onclick="goBackHome()" class="flex items-center gap-2 text-slate-500 font-bold hover:text-blue-600">
                 <i data-lucide="arrow-left" size="20"></i> กลับ
             </button>
             <h2 id="currentMonthTitle" class="font-black text-slate-800 text-lg uppercase"></h2>
             <div class="flex gap-2">
                 <button onclick="window.print()" class="p-2 border rounded-xl text-slate-400 hover:bg-slate-50"><i data-lucide="printer" size="20"></i></button>
-                <button onclick="openForm()" class="bg-blue-600 text-white px-5 py-2 rounded-xl font-bold text-sm">+ เพิ่มข้อมูล</button>
+                <button onclick="openForm()" class="bg-blue-600 text-white px-5 py-2 rounded-xl font-bold text-sm shadow-lg shadow-blue-200">+ เพิ่มข้อมูล</button>
             </div>
         </nav>
         <div id="dataItems" class="max-w-4xl mx-auto mt-10 px-4 space-y-4"></div>
     </div>
 
-    <div id="modal-detail" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-2xl rounded-3xl p-8 my-auto">
-            <div class="flex justify-between items-center mb-6 no-print">
-                <h3 class="text-xl font-bold">อัปเดตงาน / รายละเอียด</h3>
-                <button onclick="closeModal('modal-detail')"><i data-lucide="x" size="28"></i></button>
+    <div id="modal-view" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl rounded-[2.5rem] p-8 md:p-12 max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <div class="flex justify-between items-center mb-8 no-print">
+                <h3 class="text-2xl font-black text-slate-800">รายละเอียดข้อมูลฉบับเต็ม</h3>
+                <button onclick="closeModal('modal-view')" class="text-slate-300 hover:text-slate-600"><i data-lucide="x" size="32"></i></button>
             </div>
             
-            <div id="detailContent" class="space-y-4">
+            <div id="fullDetailContent" class="print-container space-y-8">
                 </div>
 
-            <hr class="my-6 no-print">
-            
-            <div id="updateForm" class="space-y-4 no-print">
-                <p class="font-bold text-orange-600 flex items-center gap-2"><i data-lucide="edit-3" size="18"></i> อัปเดตผลการแก้ไข</p>
-                <select id="upStatus" class="input-field font-bold">
-                    <option value="รอดำเนินการ">รอดำเนินการ</option>
-                    <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-                </select>
-                <textarea id="upSolution" placeholder="แนวทางแก้ไข / ผลการดำเนินการ" class="input-field" rows="2"></textarea>
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">รูปภาพ After (หลังแก้ไข)</label>
-                    <input type="file" id="upImgAfter" accept="image/*" class="input-field text-sm">
-                </div>
-                <button id="saveUpdateBtn" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold shadow-lg">บันทึกการอัปเดต</button>
-                <button id="delBtn" class="w-full text-red-400 font-bold text-sm py-2">ลบข้อมูลนี้</button>
+            <div class="mt-10 flex gap-4 no-print">
+                <button id="btnUpdatePop" class="flex-1 bg-orange-500 text-white py-4 rounded-2xl font-bold shadow-xl flex items-center justify-center gap-2 hover:bg-orange-600">
+                    <i data-lucide="edit-3" size="20"></i> อัปเดตงาน / ปิดเคส
+                </button>
+                <button id="btnDeletePop" class="bg-red-50 text-red-500 px-6 rounded-2xl border border-red-100 hover:bg-red-100 transition-all">
+                    <i data-lucide="trash-2" size="22"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="modal-form" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4 no-print">
-        <div class="bg-white w-full max-w-2xl rounded-3xl p-8">
+    <div id="modal-form" class="fixed inset-0 bg-slate-900/60 z-[100] hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold">📝 บันทึกข้อมูลใหม่</h3>
                 <button onclick="closeModal('modal-form')"><i data-lucide="x" size="28"></i></button>
             </div>
             <form id="mainForm" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="reporter" placeholder="ชื่อผู้รายงาน (PIC)" required class="input-field">
-                    <select id="dept" class="input-field font-bold">
-                        <option>Welding</option>
-                        <option>Assembly</option>
-                        <option>Manufacturing</option>
-                        <option>Inventory</option>
-                        <option>Quality Check</option>
-                        <option value="อื่นๆ">อื่นๆ</option>
-                    </select>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">ชื่อผู้รายงาน (PIC)</label>
+                        <input type="text" id="reporter" placeholder="ระบุชื่อ..." required class="input-field">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">แผนกที่พบ</label>
+                        <select id="dept" class="input-field font-bold">
+                            <option>Welding</option><option>Assembly</option><option>Manufacturing</option><option>Inventory</option><option>Quality Check</option><option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
                 </div>
-                <textarea id="detail" placeholder="ปัญหาที่พบ (Problem)" required class="input-field" rows="3"></textarea>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 block mb-1">รูปภาพ Before</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">ปัญหาที่พบ (Problem)</label>
+                    <textarea id="detail" placeholder="อธิบายปัญหา..." required class="input-field" rows="3"></textarea>
+                </div>
+                <div class="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-4">
+                    <input type="text" id="solution" placeholder="แนวทางแก้ไข (Solution)" class="input-field">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="owner" placeholder="ผู้รับผิดชอบ" required class="input-field">
+                        <input type="date" id="dueDate" required class="input-field">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">รูปภาพ BEFORE</label>
                     <input type="file" id="imgBefore" accept="image/*" class="input-field text-sm">
                 </div>
-                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg">บันทึกข้อมูล</button>
+                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg">บันทึกข้อมูลเข้าระบบ</button>
             </form>
+        </div>
+    </div>
+
+    <div id="modal-update" class="fixed inset-0 bg-slate-900/60 z-[110] hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-orange-600">อัปเดตผลการดำเนินงาน</h3>
+            <div class="space-y-4">
+                <select id="upStatus" class="input-field font-bold">
+                    <option value="รอดำเนินการ">รอดำเนินการ</option>
+                    <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                </select>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">วันที่แก้ไขเสร็จจริง</label>
+                    <input type="date" id="upActualDate" class="input-field">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-emerald-500 uppercase block mb-1">รูปภาพ AFTER</label>
+                    <input type="file" id="upImgAfter" accept="image/*" class="input-field text-sm">
+                </div>
+                <button id="saveUpdateBtn" class="w-full py-4 bg-orange-500 text-white font-bold rounded-2xl shadow-lg mt-4">บันทึกการเปลี่ยนแปลง</button>
+                <button onclick="closeModal('modal-update')" class="w-full py-2 text-slate-400 text-sm">ยกเลิก</button>
+            </div>
         </div>
     </div>
 
@@ -112,7 +141,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase Config (กรุณาใช้ของคุณ)
         const app = initializeApp({ databaseURL: "https://robust-helix-471007-m7-default-rtdb.asia-southeast1.firebasedatabase.app/" });
         const db = getDatabase(app);
 
@@ -129,16 +157,17 @@
             months.forEach((m, i) => {
                 const mid = `${yearSelect.value}-${String(i + 1).padStart(2, '0')}`;
                 const div = document.createElement('div');
-                div.className = 'bg-white p-6 rounded-3xl border border-slate-100 shadow-sm cursor-pointer hover:shadow-md transition-all';
-                div.innerHTML = `<div class="flex justify-between items-center"><b class="text-slate-700">${m}</b><i data-lucide="chevron-right" size="18" class="text-slate-300"></i></div><div id="stats-${mid}" class="mt-4 space-y-1"></div>`;
+                div.className = 'bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm cursor-pointer hover:shadow-xl transition-all';
+                div.innerHTML = `<div class="flex justify-between items-center"><b class="text-slate-700 text-lg">${m}</b><i data-lucide="chevron-right" size="18" class="text-slate-300"></i></div><div id="stats-${mid}" class="mt-4 space-y-1"></div>`;
                 onValue(ref(db, `patrols/${mid}`), (snap) => {
                     const stats = document.getElementById(`stats-${mid}`);
                     const data = snap.val();
                     if (data) {
                         const items = Object.values(data);
                         const done = items.filter(v => v.status === 'เสร็จสิ้น').length;
-                        stats.innerHTML = `<p class="text-[10px] text-blue-500 font-bold uppercase">ตรวจพบ: ${items.length}</p><p class="text-[10px] text-emerald-500 font-bold uppercase">เสร็จแล้ว: ${done}</p>`;
-                    } else { stats.innerHTML = `<p class="text-xs text-slate-300 italic">NO DATA</p>`; }
+                        stats.innerHTML = `<div class="bg-blue-50 p-2 px-3 rounded-xl flex justify-between"><span class="text-[10px] font-bold text-blue-500 uppercase">ตรวจพบ</span><span class="font-bold text-blue-600">${items.length}</span></div>
+                                         <div class="bg-emerald-50 p-2 px-3 rounded-xl flex justify-between"><span class="text-[10px] font-bold text-emerald-500 uppercase">เสร็จแล้ว</span><span class="font-bold text-emerald-600">${done}</span></div>`;
+                    } else { stats.innerHTML = `<p class="text-xs text-slate-300 italic py-2">NO DATA</p>`; }
                     lucide.createIcons();
                 });
                 div.onclick = () => { currentPath = mid; document.getElementById('page-home').classList.add('hidden'); document.getElementById('page-list').classList.remove('hidden'); document.getElementById('currentMonthTitle').innerText = `${m} ${yearSelect.value}`; listenData(); };
@@ -155,15 +184,11 @@
                     Object.entries(data).reverse().forEach(([id, item]) => {
                         const sClass = item.status === 'เสร็จสิ้น' ? 'status-complete' : 'status-pending';
                         container.innerHTML += `
-                            <div onclick='openDetail("${id}", ${JSON.stringify(item)})' class="report-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-all">
+                            <div onclick='viewFullDetail("${id}", ${JSON.stringify(item)})' class="bg-white p-6 rounded-[1.5rem] border border-slate-100 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-all">
                                 <div>
                                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${item.dept}</p>
-                                    <h3 class="font-bold text-slate-700 text-lg">${item.detail}</h3>
-                                    <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">👤 PIC: ${item.reporter}</p>
-                                    <div class="print-grid hidden">
-                                        <div><p class="text-[8px] font-bold">BEFORE</p><img src="${item.imgBefore || ''}"></div>
-                                        <div><p class="text-[8px] font-bold">AFTER</p><img src="${item.imgAfter || ''}"></div>
-                                    </div>
+                                    <h3 class="font-bold text-slate-700 text-lg mb-1">${item.detail}</h3>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1"><i data-lucide="user" size="10"></i> PIC: ${item.reporter}</p>
                                 </div>
                                 <span class="status-badge ${sClass}">${item.status}</span>
                             </div>`;
@@ -173,21 +198,30 @@
             });
         }
 
-        window.openDetail = (id, item) => {
+        window.viewFullDetail = (id, item) => {
             currentId = id;
-            const content = document.getElementById('detailContent');
+            const content = document.getElementById('fullDetailContent');
             const sClass = item.status === 'เสร็จสิ้น' ? 'status-complete' : 'status-pending';
             content.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
-                    <div><b class="text-[10px] text-slate-400 uppercase tracking-widest">แผนก: ${item.dept}</b><h4 class="text-xl font-bold text-slate-800">${item.detail}</h4><p class="text-xs text-slate-500 mt-1 uppercase">👤 ผู้รายงาน: ${item.reporter}</p></div>
-                    <span class="status-badge ${sClass}">${item.status}</span>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl"><b class="text-[10px] text-slate-400 block mb-1 uppercase">ผู้รายงาน (PIC)</b><span class="font-bold text-slate-700">${item.reporter}</span></div>
+                    <div class="bg-slate-50 p-4 rounded-2xl"><b class="text-[10px] text-slate-400 block mb-1 uppercase">กำหนดเสร็จ</b><span class="font-bold text-orange-600">${item.dueDate || '-'}</span></div>
+                    <div class="bg-slate-50 p-4 rounded-2xl"><b class="text-[10px] text-slate-400 block mb-1 uppercase">สถานะปัจจุบัน</b><span class="status-badge ${sClass}">${item.status}</span></div>
                 </div>
-                <div class="bg-blue-50 p-4 rounded-xl text-sm border border-blue-100"><b>ผลการแก้ไข:</b> ${item.solution || 'อยู่ระหว่างดำเนินการ'}</div>
-                <div class="grid grid-cols-2 gap-4 mt-4">
-                    <div><p class="text-[10px] font-bold text-red-400 mb-1">📸 BEFORE</p><img src="${item.imgBefore || ''}" class="w-full h-40 object-cover rounded-xl border"></div>
-                    <div><p class="text-[10px] font-bold text-emerald-400 mb-1">✅ AFTER</p><img src="${item.imgAfter || ''}" class="w-full h-40 object-cover rounded-xl border bg-slate-100"></div>
+                <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                    <b class="text-[10px] text-slate-400 block mb-2 uppercase flex items-center gap-1"><i data-lucide="alert-triangle" size="14"></i> PROBLEM / ปัญหาที่พบ</b>
+                    <p class="font-bold text-slate-800 text-xl leading-relaxed">${item.detail}</p>
+                </div>
+                <div class="p-6 bg-blue-50/50 rounded-3xl border border-blue-100">
+                    <b class="text-[10px] text-blue-500 block mb-2 uppercase flex items-center gap-1"><i data-lucide="lightbulb" size="14"></i> SOLUTION / วิธีแก้ไข</b>
+                    <p class="font-bold text-slate-700">${item.solution || 'รอดำเนินการ'}</p>
+                    ${item.actualDate ? `<p class="text-[10px] text-emerald-600 font-bold mt-2 uppercase">แก้ไขเสร็จจริงเมื่อ: ${item.actualDate}</p>` : ''}
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="text-center"><p class="text-[10px] font-black text-red-400 uppercase mb-3 tracking-widest">📸 BEFORE</p><img src="${item.imgBefore || ''}" class="rounded-3xl w-full border shadow-md h-64 object-cover"></div>
+                    <div class="text-center"><p class="text-[10px] font-black text-emerald-400 uppercase mb-3 tracking-widest">✅ AFTER</p>${item.imgAfter ? `<img src="${item.imgAfter}" class="rounded-3xl w-full border shadow-md h-64 object-cover">` : '<div class="h-64 bg-slate-50 rounded-3xl border border-dashed border-slate-200 flex items-center justify-center text-slate-300 font-bold uppercase text-[10px]">รอการแก้ไข</div>'}</div>
                 </div>`;
-            document.getElementById('modal-detail').classList.remove('hidden');
+            document.getElementById('modal-view').classList.remove('hidden');
             lucide.createIcons();
         };
 
@@ -214,7 +248,9 @@
             const img = await processImg(document.getElementById('imgBefore').files[0]);
             const payload = {
                 reporter: document.getElementById('reporter').value, dept: document.getElementById('dept').value,
-                detail: document.getElementById('detail').value, imgBefore: img, status: "รอดำเนินการ"
+                detail: document.getElementById('detail').value, solution: document.getElementById('solution').value,
+                owner: document.getElementById('owner').value, dueDate: document.getElementById('dueDate').value,
+                imgBefore: img, status: "รอดำเนินการ", ts: new Date().getTime()
             };
             push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeModal('modal-form'); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; btn.disabled = false; });
         };
@@ -222,15 +258,25 @@
         document.getElementById('saveUpdateBtn').onclick = async () => {
             const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
             const newImg = await processImg(document.getElementById('upImgAfter').files[0]);
-            const updates = { status: document.getElementById('upStatus').value, solution: document.getElementById('upSolution').value };
+            const updates = { 
+                status: document.getElementById('upStatus').value, 
+                actualDate: document.getElementById('upActualDate').value 
+            };
             if(newImg) updates.imgAfter = newImg;
-            update(ref(db, `patrols/${currentPath}/${currentId}`), updates).then(() => { closeModal('modal-detail'); btn.innerText = "บันทึกการอัปเดต"; btn.disabled = false; });
+            update(ref(db, `patrols/${currentPath}/${currentId}`), updates).then(() => { 
+                closeModal('modal-update'); 
+                closeModal('modal-view');
+                btn.innerText = "บันทึกการเปลี่ยนแปลง"; 
+                btn.disabled = false; 
+            });
         };
 
-        document.getElementById('delBtn').onclick = () => { if(confirm('ยืนยันการลบ?')) { remove(ref(db, `patrols/${currentPath}/${currentId}`)); closeModal('modal-detail'); } };
         window.goBackHome = () => { document.getElementById('page-list').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); };
         window.openForm = () => document.getElementById('modal-form').classList.remove('hidden');
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        document.getElementById('btnUpdatePop').onclick = () => document.getElementById('modal-update').classList.remove('hidden');
+        document.getElementById('btnDeletePop').onclick = () => { if(confirm('ยืนยันการลบข้อมูลนี้?')) { remove(ref(db, `patrols/${currentPath}/${currentId}`)); closeModal('modal-view'); } };
+        
         yearSelect.onchange = initHome;
         initHome();
     </script>
