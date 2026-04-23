@@ -9,24 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .month-card { background: white; border-radius: 1.5rem; transition: 0.3s; border: 1px solid #f1f5f9; cursor: pointer; }
         .input-field { border: 1.5px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; }
-        
-        /* สถานะสี Badge */
-        .status-badge { font-size: 10px; font-weight: bold; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; }
+        .status-badge { font-size: 10px; font-weight: bold; padding: 4px 14px; border-radius: 9999px; text-transform: uppercase; white-space: nowrap; }
         .status-pending { background-color: #fee2e2; color: #ef4444; }
         .status-complete { background-color: #d1fae5; color: #10b981; }
 
-        /* จัดการหน้าพิมพ์ (Print) */
         @media print {
-            .no-print, button, nav, .year-selector { display: none !important; }
+            .no-print, button, nav { display: none !important; }
             body { background: white; padding: 0; }
-            .modal-overlay { position: static; background: none; display: block; padding: 0; }
-            .modal-box { max-width: 100%; box-shadow: none; overflow: visible; border: none; padding: 0; }
-            .print-layout { display: block !important; width: 100%; }
-            .print-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; }
-            img { max-width: 100% !important; border-radius: 8px; margin-top: 10px; }
-            .print-card { border-bottom: 1px solid #eee; padding: 15px 0; page-break-inside: avoid; }
+            #dataItems { display: block !important; width: 100%; }
+            .report-card { border: 1px solid #eee; margin-bottom: 20px; page-break-inside: avoid; border-radius: 12px; padding: 15px; }
+            .print-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 10px; margin-top: 10px; }
+            img { max-width: 100% !important; border-radius: 8px; }
         }
     </style>
 </head>
@@ -34,7 +28,7 @@
 
     <div id="page-home" class="min-h-screen p-6 md:p-12 no-print">
         <div class="max-w-6xl mx-auto text-center mb-12">
-            <h1 class="text-3xl font-black text-slate-800 mb-6 tracking-tight">👷 SAFETY PATROL & 5S 👷‍♀️</h1>
+            <h1 class="text-3xl font-black text-slate-800 mb-6 uppercase">👷 SAFETY PATROL & 5S 👷‍♀️</h1>
             <div class="inline-flex items-center gap-3 bg-white px-5 py-2 rounded-full shadow-sm border border-slate-200">
                 <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">ปีที่บันทึก:</span>
                 <select id="yearSelect" class="font-bold text-blue-600 bg-transparent outline-none cursor-pointer text-lg"></select>
@@ -44,34 +38,44 @@
     </div>
 
     <div id="page-list" class="hidden min-h-screen pb-12">
-        <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b p-4 no-print shadow-sm flex justify-between items-center">
+        <nav class="sticky top-0 z-50 bg-white border-b p-4 no-print shadow-sm flex justify-between items-center">
             <button onclick="goBackHome()" class="flex items-center gap-2 text-slate-500 font-bold hover:text-blue-600">
                 <i data-lucide="arrow-left" size="20"></i> กลับ
             </button>
-            <h2 id="currentMonthTitle" class="font-black text-slate-800 text-lg uppercase tracking-tight"></h2>
+            <h2 id="currentMonthTitle" class="font-black text-slate-800 text-lg uppercase"></h2>
             <div class="flex gap-2">
                 <button onclick="window.print()" class="p-2 border rounded-xl text-slate-400 hover:bg-slate-50"><i data-lucide="printer" size="20"></i></button>
-                <button onclick="openForm()" class="bg-blue-600 text-white px-5 py-2 rounded-xl font-bold text-sm shadow-lg">+ เพิ่มข้อมูล</button>
+                <button onclick="openForm()" class="bg-blue-600 text-white px-5 py-2 rounded-xl font-bold text-sm">+ เพิ่มข้อมูล</button>
             </div>
         </nav>
         <div id="dataItems" class="max-w-4xl mx-auto mt-10 px-4 space-y-4"></div>
     </div>
 
-    <div id="modal-view" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-4xl rounded-3xl p-8 max-h-[90vh] overflow-y-auto">
+    <div id="modal-detail" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-2xl rounded-3xl p-8 my-auto">
             <div class="flex justify-between items-center mb-6 no-print">
-                <h3 class="text-xl font-bold">รายละเอียดข้อมูล</h3>
-                <button onclick="closeModal('modal-view')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" size="28"></i></button>
+                <h3 class="text-xl font-bold">อัปเดตงาน / รายละเอียด</h3>
+                <button onclick="closeModal('modal-detail')"><i data-lucide="x" size="28"></i></button>
             </div>
             
-            <div id="viewDetailContent" class="space-y-8">
+            <div id="detailContent" class="space-y-4">
                 </div>
+
+            <hr class="my-6 no-print">
             
-            <div class="mt-8 flex gap-4 no-print">
-                <button id="btnUpdatePop" class="flex-1 bg-orange-500 text-white py-4 rounded-2xl font-bold shadow-xl flex items-center justify-center gap-2">
-                    <i data-lucide="edit-3" size="20"></i> อัปเดตงาน
-                </button>
-                <button id="btnDeletePop" class="bg-red-50 text-red-500 px-6 rounded-2xl border border-red-100"><i data-lucide="trash-2" size="20"></i></button>
+            <div id="updateForm" class="space-y-4 no-print">
+                <p class="font-bold text-orange-600 flex items-center gap-2"><i data-lucide="edit-3" size="18"></i> อัปเดตผลการแก้ไข</p>
+                <select id="upStatus" class="input-field font-bold">
+                    <option value="รอดำเนินการ">รอดำเนินการ</option>
+                    <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                </select>
+                <textarea id="upSolution" placeholder="แนวทางแก้ไข / ผลการดำเนินการ" class="input-field" rows="2"></textarea>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">รูปภาพ After (หลังแก้ไข)</label>
+                    <input type="file" id="upImgAfter" accept="image/*" class="input-field text-sm">
+                </div>
+                <button id="saveUpdateBtn" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold shadow-lg">บันทึกการอัปเดต</button>
+                <button id="delBtn" class="w-full text-red-400 font-bold text-sm py-2">ลบข้อมูลนี้</button>
             </div>
         </div>
     </div>
@@ -79,47 +83,27 @@
     <div id="modal-form" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4 no-print">
         <div class="bg-white w-full max-w-2xl rounded-3xl p-8">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="plus-circle" class="text-blue-600"></i> บันทึกข้อมูลใหม่</h3>
+                <h3 class="text-xl font-bold">📝 บันทึกข้อมูลใหม่</h3>
                 <button onclick="closeModal('modal-form')"><i data-lucide="x" size="28"></i></button>
             </div>
             <form id="mainForm" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">ผู้รายงาน (PIC)</label>
-                        <input type="text" id="reporter" placeholder="ระบุชื่อผู้รายงาน" required class="input-field w-full">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">แผนก</label>
-                        <select id="dept" class="input-field w-full font-bold">
-                            <option>Welding</option><option>Assembly</option><option>Manufacturing</option><option>Inventory</option><option>Quality Check</option><option>อื่นๆ</option>
-                        </select>
-                    </div>
+                    <input type="text" id="reporter" placeholder="ชื่อผู้รายงาน (PIC)" required class="input-field">
+                    <select id="dept" class="input-field font-bold">
+                        <option>Welding</option>
+                        <option>Assembly</option>
+                        <option>Manufacturing</option>
+                        <option>Inventory</option>
+                        <option>Quality Check</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
+                    </select>
                 </div>
+                <textarea id="detail" placeholder="ปัญหาที่พบ (Problem)" required class="input-field" rows="3"></textarea>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1"><i data-lucide="alert-triangle" size="12"></i> ปัญหาที่พบ (Problem)</label>
-                    <textarea id="detail" placeholder="ระบุปัญหา..." required class="input-field w-full" rows="3"></textarea>
+                    <label class="text-[10px] font-bold text-slate-400 block mb-1">รูปภาพ Before</label>
+                    <input type="file" id="imgBefore" accept="image/*" class="input-field text-sm">
                 </div>
-                <div class="bg-blue-50/50 p-4 rounded-2xl space-y-4 border border-blue-100">
-                    <div>
-                        <label class="text-[10px] font-bold text-blue-500 uppercase flex items-center gap-1"><i data-lucide="lightbulb" size="12"></i> วิธีแก้ไข (Solution)</label>
-                        <input type="text" id="solution" placeholder="ระบุวิธีแก้ไข..." class="input-field w-full">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">ผู้รับผิดชอบ</label>
-                            <input type="text" id="owner" required class="input-field w-full">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">กำหนดเสร็จ</label>
-                            <input type="date" id="dueDate" required class="input-field w-full">
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">รูปภาพ Before</label>
-                    <input type="file" id="imgBefore" accept="image/*" class="text-sm">
-                </div>
-                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition-all">บันทึกข้อมูล</button>
+                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg">บันทึกข้อมูล</button>
             </form>
         </div>
     </div>
@@ -128,13 +112,13 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // Firebase Config (กรุณาใช้ของคุณ)
         const app = initializeApp({ databaseURL: "https://robust-helix-471007-m7-default-rtdb.asia-southeast1.firebasedatabase.app/" });
         const db = getDatabase(app);
 
         const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
         let currentPath = "", currentId = "";
 
-        // จัดการปี 2026-2099
         const yearSelect = document.getElementById('yearSelect');
         for (let y = 2026; y <= 2099; y++) {
             const opt = document.createElement('option'); opt.value = y; opt.innerText = y; yearSelect.appendChild(opt);
@@ -145,17 +129,15 @@
             months.forEach((m, i) => {
                 const mid = `${yearSelect.value}-${String(i + 1).padStart(2, '0')}`;
                 const div = document.createElement('div');
-                div.className = 'month-card p-6';
-                div.innerHTML = `<div class="flex justify-between items-center"><b>${m}</b><i data-lucide="chevron-right" size="18"></i></div>
-                                 <div id="stats-${mid}" class="mt-4 space-y-1"></div>`;
+                div.className = 'bg-white p-6 rounded-3xl border border-slate-100 shadow-sm cursor-pointer hover:shadow-md transition-all';
+                div.innerHTML = `<div class="flex justify-between items-center"><b class="text-slate-700">${m}</b><i data-lucide="chevron-right" size="18" class="text-slate-300"></i></div><div id="stats-${mid}" class="mt-4 space-y-1"></div>`;
                 onValue(ref(db, `patrols/${mid}`), (snap) => {
                     const stats = document.getElementById(`stats-${mid}`);
                     const data = snap.val();
                     if (data) {
                         const items = Object.values(data);
                         const done = items.filter(v => v.status === 'เสร็จสิ้น').length;
-                        stats.innerHTML = `<div class="bg-blue-50 text-blue-600 text-[10px] font-bold p-1 px-2 rounded-full inline-block">ตรวจพบ: ${items.length}</div>
-                                           <div class="bg-emerald-50 text-emerald-600 text-[10px] font-bold p-1 px-2 rounded-full inline-block">เสร็จแล้ว: ${done}</div>`;
+                        stats.innerHTML = `<p class="text-[10px] text-blue-500 font-bold uppercase">ตรวจพบ: ${items.length}</p><p class="text-[10px] text-emerald-500 font-bold uppercase">เสร็จแล้ว: ${done}</p>`;
                     } else { stats.innerHTML = `<p class="text-xs text-slate-300 italic">NO DATA</p>`; }
                     lucide.createIcons();
                 });
@@ -173,11 +155,15 @@
                     Object.entries(data).reverse().forEach(([id, item]) => {
                         const sClass = item.status === 'เสร็จสิ้น' ? 'status-complete' : 'status-pending';
                         container.innerHTML += `
-                            <div onclick='viewDetail("${id}", ${JSON.stringify(item)})' class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center cursor-pointer hover:bg-blue-50">
+                            <div onclick='openDetail("${id}", ${JSON.stringify(item)})' class="report-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-all">
                                 <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase">${item.dept}</p>
-                                    <h3 class="font-bold text-slate-700">${item.detail}</h3>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${item.dept}</p>
+                                    <h3 class="font-bold text-slate-700 text-lg">${item.detail}</h3>
                                     <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">👤 PIC: ${item.reporter}</p>
+                                    <div class="print-grid hidden">
+                                        <div><p class="text-[8px] font-bold">BEFORE</p><img src="${item.imgBefore || ''}"></div>
+                                        <div><p class="text-[8px] font-bold">AFTER</p><img src="${item.imgAfter || ''}"></div>
+                                    </div>
                                 </div>
                                 <span class="status-badge ${sClass}">${item.status}</span>
                             </div>`;
@@ -187,43 +173,64 @@
             });
         }
 
-        window.viewDetail = (id, item) => {
+        window.openDetail = (id, item) => {
             currentId = id;
-            const content = document.getElementById('viewDetailContent');
+            const content = document.getElementById('detailContent');
             const sClass = item.status === 'เสร็จสิ้น' ? 'status-complete' : 'status-pending';
             content.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-slate-50 p-4 rounded-2xl"><b class="text-[10px] text-slate-400 block mb-1">DUE DATE / กำหนดเสร็จ</b><span class="text-orange-600 font-bold">${item.dueDate}</span></div>
-                    <div class="bg-slate-50 p-4 rounded-2xl"><b class="text-[10px] text-slate-400 block mb-1">ACTUAL DATE / เสร็จจริง</b><span class="text-emerald-600 font-bold">${item.actualDate || '-'}</span></div>
+                <div class="flex justify-between items-start mb-4">
+                    <div><b class="text-[10px] text-slate-400 uppercase tracking-widest">แผนก: ${item.dept}</b><h4 class="text-xl font-bold text-slate-800">${item.detail}</h4><p class="text-xs text-slate-500 mt-1 uppercase">👤 ผู้รายงาน: ${item.reporter}</p></div>
+                    <span class="status-badge ${sClass}">${item.status}</span>
                 </div>
-                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                    <b class="text-[10px] text-slate-400 block mb-2 flex items-center gap-1"><i data-lucide="alert-triangle" size="12"></i> PROBLEM / ปัญหาที่พบ</b>
-                    <p class="font-bold text-slate-800 text-lg">${item.detail}</p>
-                    <p class="text-xs text-slate-500 mt-2">รายงานโดย: <b>${item.reporter}</b> | แผนก: <b>${item.dept}</b></p>
-                </div>
-                <div class="p-6 bg-emerald-50/50 rounded-2xl border border-emerald-100">
-                    <b class="text-[10px] text-emerald-500 block mb-2 flex items-center gap-1"><i data-lucide="lightbulb" size="12"></i> SOLUTION / วิธีแก้ไข</b>
-                    <p class="font-bold text-slate-700">${item.solution || 'รอดำเนินการ'}</p>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="text-center">
-                        <p class="text-[10px] font-black text-slate-400 uppercase mb-2">📸 BEFORE</p>
-                        <img src="${item.imgBefore || ''}" class="rounded-xl w-full h-48 object-cover border">
-                    </div>
-                    <div class="text-center">
-                        <p class="text-[10px] font-black text-slate-400 uppercase mb-2">✅ AFTER</p>
-                        ${item.imgAfter ? `<img src="${item.imgAfter}" class="rounded-xl w-full h-48 object-cover border">` : `<div class="h-48 bg-slate-100 rounded-xl flex items-center justify-center text-slate-300 font-bold text-xs uppercase">รอดำเนินการ</div>`}
-                    </div>
+                <div class="bg-blue-50 p-4 rounded-xl text-sm border border-blue-100"><b>ผลการแก้ไข:</b> ${item.solution || 'อยู่ระหว่างดำเนินการ'}</div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div><p class="text-[10px] font-bold text-red-400 mb-1">📸 BEFORE</p><img src="${item.imgBefore || ''}" class="w-full h-40 object-cover rounded-xl border"></div>
+                    <div><p class="text-[10px] font-bold text-emerald-400 mb-1">✅ AFTER</p><img src="${item.imgAfter || ''}" class="w-full h-40 object-cover rounded-xl border bg-slate-100"></div>
                 </div>`;
-            document.getElementById('modal-view').classList.remove('hidden');
+            document.getElementById('modal-detail').classList.remove('hidden');
             lucide.createIcons();
         };
 
-        // ส่วนฟังก์ชันอื่นๆ (บันทึก, อัปเดต, บีบอัดรูปภาพ) ให้ใช้ตามระบบเดิมที่คุณมี...
+        const processImg = async (file) => {
+            if (!file) return null;
+            return new Promise((res) => {
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const scale = Math.min(800 / img.width, 1);
+                        canvas.width = img.width * scale; canvas.height = img.height * scale;
+                        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                        res(canvas.toDataURL('image/jpeg', 0.6));
+                    };
+                };
+            });
+        };
+
+        document.getElementById('mainForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
+            const img = await processImg(document.getElementById('imgBefore').files[0]);
+            const payload = {
+                reporter: document.getElementById('reporter').value, dept: document.getElementById('dept').value,
+                detail: document.getElementById('detail').value, imgBefore: img, status: "รอดำเนินการ"
+            };
+            push(ref(db, `patrols/${currentPath}`), payload).then(() => { closeModal('modal-form'); e.target.reset(); btn.innerText = "บันทึกข้อมูล"; btn.disabled = false; });
+        };
+
+        document.getElementById('saveUpdateBtn').onclick = async () => {
+            const btn = document.getElementById('saveUpdateBtn'); btn.innerText = "กำลังบันทึก..."; btn.disabled = true;
+            const newImg = await processImg(document.getElementById('upImgAfter').files[0]);
+            const updates = { status: document.getElementById('upStatus').value, solution: document.getElementById('upSolution').value };
+            if(newImg) updates.imgAfter = newImg;
+            update(ref(db, `patrols/${currentPath}/${currentId}`), updates).then(() => { closeModal('modal-detail'); btn.innerText = "บันทึกการอัปเดต"; btn.disabled = false; });
+        };
+
+        document.getElementById('delBtn').onclick = () => { if(confirm('ยืนยันการลบ?')) { remove(ref(db, `patrols/${currentPath}/${currentId}`)); closeModal('modal-detail'); } };
         window.goBackHome = () => { document.getElementById('page-list').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); };
         window.openForm = () => document.getElementById('modal-form').classList.remove('hidden');
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-        
         yearSelect.onchange = initHome;
         initHome();
     </script>
